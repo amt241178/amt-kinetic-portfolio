@@ -2,13 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import AvatarControls, { COLOR_SCHEMES } from './AvatarControls';
 
-// ---- Loading Screen ----
 const SKILLS = [
   'Event Tech Lead', 'AI Builder', 'Production Strategist', 'Web App Creator',
   'Live Streaming Expert', 'No-Code Developer', 'Cvent Certified', 'APAC Specialist',
 ];
+
+// Primary model; fallback to Model2 if this fails
+const AVATAR_URL = 'https://drive.usercontent.google.com/download?id=19JNLJEdbvuogzR_jO_Ohfwax_ERZJsZS&export=download&confirm=t';
+const AVATAR_URL_2 = 'https://drive.usercontent.google.com/download?id=1i7ZQ48C1mAIoOzwmgwKTrA53Ih43lyrE&export=download&confirm=t';
 
 function LoadingScreen({ progress, visible }) {
   const [idx, setIdx] = useState(0);
@@ -29,28 +31,27 @@ function LoadingScreen({ progress, visible }) {
       opacity: visible ? 1 : 0, pointerEvents: visible ? 'auto' : 'none', transition: 'opacity 0.7s ease',
     }}>
       <div style={{ position: 'relative', width: 80, height: 80 }}>
-        <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'radial-gradient(circle, #7c3aff 0%, #5b21b6 60%, transparent 100%)', filter: 'blur(8px)', animation: 'amt-pulse-orb 1.4s ease-in-out infinite' }} />
-        <div style={{ position: 'absolute', inset: 16, borderRadius: '50%', background: '#7c3aff', boxShadow: '0 0 30px #7c3aff', animation: 'amt-pulse-orb 1.4s ease-in-out infinite' }} />
+        <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'radial-gradient(circle, #00e5ff 0%, #006080 60%, transparent 100%)', filter: 'blur(8px)', animation: 'amt-pulse-orb 1.4s ease-in-out infinite' }} />
+        <div style={{ position: 'absolute', inset: 16, borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 30px #00e5ff', animation: 'amt-pulse-orb 1.4s ease-in-out infinite' }} />
       </div>
       <div style={{ textAlign: 'center', height: 60, display: 'flex', alignItems: 'center' }}>
         <div style={{
           fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: 'clamp(1.4rem, 4vw, 2.2rem)', letterSpacing: '-0.03em',
-          background: 'linear-gradient(135deg, #ffffff, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+          background: 'linear-gradient(135deg, #ffffff, #00e5ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
           opacity: show ? 1 : 0, transform: show ? 'translateY(0)' : 'translateY(12px)', transition: 'opacity 0.3s ease, transform 0.3s ease',
         }}>{SKILLS[idx]}</div>
       </div>
       <div style={{ width: 200, height: 2, background: 'rgba(255,255,255,0.08)', borderRadius: 2, overflow: 'hidden' }}>
-        <div style={{ height: '100%', borderRadius: 2, background: 'linear-gradient(90deg, #7c3aff, #a78bfa)', width: `${progress}%`, transition: 'width 0.3s ease', boxShadow: '0 0 8px #7c3aff' }} />
+        <div style={{ height: '100%', borderRadius: 2, background: 'linear-gradient(90deg, #00e5ff, #fff)', width: `${progress}%`, transition: 'width 0.3s ease', boxShadow: '0 0 8px #00e5ff' }} />
       </div>
       <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#555' }}>
-        Loading Avatar · {Math.round(progress)}%
+        Loading · {Math.round(progress)}%
       </div>
     </div>
   );
 }
 
-// ---- Role Cycler ----
-const ROLES = ['Event Tech Lead', 'AI Builder', 'Production Strategist', 'Web App Creator'];
+const ROLES = ['Event Tech Lead', 'AI Builder', 'Production Strategist', 'Live Streaming Expert'];
 
 function RoleCycler() {
   const [idx, setIdx] = useState(0);
@@ -69,7 +70,7 @@ function RoleCycler() {
       <div style={{
         position: 'absolute', right: 0, top: 0,
         fontSize: 'clamp(2rem, 4.5vw, 3.8rem)', fontWeight: 900, letterSpacing: '-0.03em', whiteSpace: 'nowrap', lineHeight: 1.05,
-        background: 'linear-gradient(135deg, #ffffff, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+        background: 'linear-gradient(135deg, #ffffff, #00e5ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
         opacity: phase === 'in' ? 1 : 0, transform: phase === 'in' ? 'translateY(0)' : 'translateY(-40px)',
         transition: 'opacity 0.4s ease, transform 0.4s ease',
       }}>{ROLES[idx]}</div>
@@ -77,33 +78,95 @@ function RoleCycler() {
   );
 }
 
-// ---- Main Hero ----
+function buildScene(renderer) {
+  const scene = new THREE.Scene();
+  scene.background = null;
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.12));
+
+  const key = new THREE.DirectionalLight(0xffffff, 1.6);
+  key.position.set(-3, 4, 3);
+  key.castShadow = true;
+  key.shadow.mapSize.set(1024, 1024);
+  key.shadow.bias = -0.0005;
+  scene.add(key);
+
+  const rim = new THREE.PointLight(0x00e5ff, 14, 10);
+  rim.position.set(0, 2, -3);
+  scene.add(rim);
+
+  const fill = new THREE.PointLight(0xffffff, 0.5, 12);
+  fill.position.set(4, 0.5, 1);
+  scene.add(fill);
+
+  const kicker = new THREE.PointLight(0xff1f71, 1.0, 6);
+  kicker.position.set(-2.5, -1, 2);
+  scene.add(kicker);
+
+  // Halo plane behind avatar
+  const haloMat = new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.07, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+  const halo = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), haloMat);
+  halo.position.set(0, 0.5, -1.8);
+  scene.add(halo);
+
+  // Floating orb
+  const orbMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, emissive: 0x00e5ff, emissiveIntensity: 3, toneMapped: false });
+  const orb = new THREE.Mesh(new THREE.SphereGeometry(0.12, 32, 32), orbMat);
+  orb.position.set(-2.0, 0.5, 0.5);
+  scene.add(orb);
+
+  return { scene, rim, halo, haloMat, orb };
+}
+
+function loadAvatar(url, fallbackUrl, scene, onProgress, onDone) {
+  const loader = new GLTFLoader();
+  const group = new THREE.Group();
+  scene.add(group);
+
+  function tryLoad(src) {
+    loader.load(
+      src,
+      (gltf) => {
+        const mesh = gltf.scene;
+        mesh.traverse(child => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            if (child.material) child.material.envMapIntensity = 0.4;
+          }
+        });
+        const box = new THREE.Box3().setFromObject(mesh);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        const scale = 4.2 / size.y;
+        mesh.scale.setScalar(scale);
+        box.setFromObject(mesh);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        mesh.position.x -= center.x;
+        mesh.position.z -= center.z;
+        mesh.position.y -= box.min.y + 2.4;
+        group.add(mesh);
+        onDone(group);
+      },
+      (xhr) => { if (xhr.total) onProgress(Math.round((xhr.loaded / xhr.total) * 100)); },
+      () => {
+        if (src === url && fallbackUrl) { tryLoad(fallbackUrl); }
+        else { onDone(group); }
+      }
+    );
+  }
+  tryLoad(url);
+  return group;
+}
+
 export default function HeroAvatar() {
   const canvasRef = useRef(null);
   const [loadProgress, setLoadProgress] = useState(0);
   const [avatarLoaded, setAvatarLoaded] = useState(false);
-  const [colorScheme, setColorScheme] = useState('purple');
-  const [animMode, setAnimMode] = useState('idle');
-
-  // Refs so animation loop reads latest values without re-running effect
-  const colorSchemeRef = useRef(colorScheme);
-  const animModeRef = useRef(animMode);
-  const sceneRefs = useRef({}); // holds rim, haloMat, orbMat for live updates
-
-  useEffect(() => { colorSchemeRef.current = colorScheme; }, [colorScheme]);
-  useEffect(() => { animModeRef.current = animMode; }, [animMode]);
-
-  // Live-update scene lights when color scheme changes
-  useEffect(() => {
-    const scheme = COLOR_SCHEMES.find(s => s.id === colorScheme);
-    if (!scheme || !sceneRefs.current.rim) return;
-    const { rim, haloMat, orbMat, fill } = sceneRefs.current;
-    rim.color.set(scheme.rim);
-    haloMat.color.set(scheme.halo);
-    orbMat.color.set(scheme.orb);
-    orbMat.emissive.set(scheme.rim);
-    if (fill) fill.color.set(scheme.fill);
-  }, [colorScheme]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -113,114 +176,27 @@ export default function HeroAvatar() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.0;
+    renderer.toneMappingExposure = 1.1;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    const scene = new THREE.Scene();
-    scene.background = null;
     const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 50);
     camera.position.set(0, 0.4, 5.0);
 
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    const { scene, rim, haloMat, orb } = buildScene(renderer);
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.15));
-    const key = new THREE.DirectionalLight(0xfff8f0, 1.4);
-    key.position.set(-3, 4, 3);
-    key.castShadow = true;
-    key.shadow.mapSize.set(1024, 1024);
-    key.shadow.bias = -0.0005;
-    scene.add(key);
-
-    const rim = new THREE.PointLight(0x7c3aff, 12, 10);
-    rim.position.set(0, 2, -3);
-    scene.add(rim);
-
-    const fill = new THREE.PointLight(0xc4b5fd, 0.6, 12);
-    fill.position.set(4, 0.5, 1);
-    scene.add(fill);
-
-    const kicker = new THREE.PointLight(0x6d28d9, 1.2, 6);
-    kicker.position.set(-2.5, -1, 2);
-    scene.add(kicker);
-
-    const haloMat = new THREE.MeshBasicMaterial({ color: 0x5b21b6, transparent: true, opacity: 0.18, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
-    const halo = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), haloMat);
-    halo.position.set(0, 0.5, -1.8);
-    scene.add(halo);
-
-    const orbMat = new THREE.MeshStandardMaterial({ color: 0x9b6dff, emissive: 0x7c3aff, emissiveIntensity: 3, toneMapped: false });
-    const orb = new THREE.Mesh(new THREE.SphereGeometry(0.16, 32, 32), orbMat);
-    orb.position.set(-2.0, 0.5, 0.5);
-    scene.add(orb);
-
-    const glowC = document.createElement('canvas');
-    glowC.width = glowC.height = 256;
-    const gc = glowC.getContext('2d');
-    const gg = gc.createRadialGradient(128, 128, 0, 128, 128, 128);
-    gg.addColorStop(0, 'rgba(155,109,255,0.9)'); gg.addColorStop(0.4, 'rgba(124,58,255,0.4)'); gg.addColorStop(1, 'rgba(124,58,255,0)');
-    gc.fillStyle = gg; gc.fillRect(0, 0, 256, 256);
-    const glowSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(glowC), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
-    glowSprite.scale.set(1.4, 1.4, 1);
-    orb.add(glowSprite);
-
-    const shadowC = document.createElement('canvas');
-    shadowC.width = shadowC.height = 256;
-    const sc2 = shadowC.getContext('2d');
-    const sg = sc2.createRadialGradient(128, 128, 0, 128, 128, 128);
-    sg.addColorStop(0, 'rgba(76,29,149,0.55)'); sg.addColorStop(0.5, 'rgba(20,10,40,0.25)'); sg.addColorStop(1, 'rgba(0,0,0,0)');
-    sc2.fillStyle = sg; sc2.fillRect(0, 0, 256, 256);
-    const groundShadow = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(shadowC), transparent: true, depthWrite: false }));
-    groundShadow.rotation.x = -Math.PI / 2;
-    groundShadow.position.set(0, -2.45, 0);
-    scene.add(groundShadow);
-
-    // Store refs for live updates
-    sceneRefs.current = { rim, haloMat, orbMat, fill };
-
-    const avatarGroup = new THREE.Group();
-    scene.add(avatarGroup);
-
-    const AVATAR_URL = 'https://media.base44.com/files/public/6a0095ba0fd898883f2ce8d9/avatar.glb';
-    let avatarMesh = null;
-    const loader = new GLTFLoader();
-    loader.load(
-      AVATAR_URL,
-      (gltf) => {
-        avatarMesh = gltf.scene;
-        avatarMesh.traverse(child => {
-          if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-            if (child.material) child.material.envMapIntensity = 0.5;
-          }
-        });
-        const box = new THREE.Box3().setFromObject(avatarMesh);
-        const size = new THREE.Vector3();
-        box.getSize(size);
-        const scale = 4.2 / size.y;
-        avatarMesh.scale.setScalar(scale);
-        box.setFromObject(avatarMesh);
-        const center = new THREE.Vector3();
-        box.getCenter(center);
-        avatarMesh.position.x -= center.x;
-        avatarMesh.position.z -= center.z;
-        avatarMesh.position.y -= box.min.y + 2.4;
-        avatarGroup.add(avatarMesh);
-        setLoadProgress(100);
-        setAvatarLoaded(true);
-      },
-      (xhr) => { if (xhr.total) setLoadProgress(Math.round((xhr.loaded / xhr.total) * 100)); },
-      () => { setAvatarLoaded(true); } // fail silently, show controls anyway
+    let avatarGroup = null;
+    loadAvatar(
+      AVATAR_URL, AVATAR_URL_2, scene,
+      (p) => setLoadProgress(p),
+      (group) => { avatarGroup = group; setLoadProgress(100); setAvatarLoaded(true); }
     );
 
     const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
     const onMouseMove = (e) => { mouse.tx = (e.clientX / window.innerWidth) * 2 - 1; mouse.ty = (e.clientY / window.innerHeight) * 2 - 1; };
     window.addEventListener('mousemove', onMouseMove);
 
-    const isTouch = 'ontouchstart' in window;
     const clock = new THREE.Clock();
     let rafId;
 
@@ -230,42 +206,27 @@ export default function HeroAvatar() {
       mouse.x += (mouse.tx - mouse.x) * 0.06;
       mouse.y += (mouse.ty - mouse.y) * 0.06;
 
-      const mode = animModeRef.current;
-
-      if (avatarMesh) {
-        if (mode === 'idle') {
-          if (isTouch) {
-            avatarGroup.rotation.y = Math.sin(t * 0.4) * 0.25;
-            avatarGroup.rotation.x = Math.sin(t * 0.3) * 0.04;
-          } else {
-            avatarGroup.rotation.y += ((mouse.x * Math.PI / 7) - avatarGroup.rotation.y) * 0.06;
-            avatarGroup.rotation.x += ((-mouse.y * Math.PI / 14) - avatarGroup.rotation.x) * 0.06;
-          }
-          avatarGroup.position.y = Math.sin(t * 1.2) * 0.025;
-        } else if (mode === 'greeting') {
-          // Wave: oscillate rotation.z for arm-wave feel + head bob
-          avatarGroup.rotation.y = Math.sin(t * 0.5) * 0.15;
-          avatarGroup.rotation.z = Math.sin(t * 3.0) * 0.08;
-          avatarGroup.position.y = Math.sin(t * 1.5) * 0.06;
-        } else if (mode === 'thinking') {
-          // Head tilt + slow sway
-          avatarGroup.rotation.y = Math.sin(t * 0.4) * 0.3;
-          avatarGroup.rotation.z = Math.sin(t * 0.6) * 0.06;
-          avatarGroup.position.y = Math.sin(t * 0.8) * 0.02;
-        }
+      if (avatarGroup) {
+        avatarGroup.rotation.y += ((mouse.x * Math.PI / 7) - avatarGroup.rotation.y) * 0.06;
+        avatarGroup.rotation.x += ((-mouse.y * Math.PI / 14) - avatarGroup.rotation.x) * 0.06;
+        avatarGroup.position.y = Math.sin(t * 1.2) * 0.025;
       }
 
       orb.position.x = -2.0 + Math.sin(t * 0.4) * 0.18;
       orb.position.y = 0.5 + Math.sin(t * 0.6) * 0.15;
       orb.position.z = 0.5 + Math.sin(t * 0.3) * 0.1;
-      haloMat.opacity = 0.16 + Math.sin(t * 0.8) * 0.04;
-      rim.intensity = 11 + Math.sin(t * 0.5) * 1.5;
+      haloMat.opacity = 0.07 + Math.sin(t * 0.8) * 0.02;
+      rim.intensity = 12 + Math.sin(t * 0.5) * 2;
 
       renderer.render(scene, camera);
     }
     animate();
 
-    const onResize = () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); };
+    const onResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
     window.addEventListener('resize', onResize);
 
     return () => {
@@ -278,24 +239,26 @@ export default function HeroAvatar() {
 
   return (
     <section id="home" style={{ position: 'relative', width: '100vw', height: '100vh', minHeight: 700, background: '#050505', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
-      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 60% 60% at 50% 70%, rgba(124,58,255,0.20) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 1 }} />
+      {/* Neon glow BG */}
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 55% 55% at 50% 70%, rgba(0,229,255,0.12) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 1 }} />
+      <div style={{ position: 'absolute', top: '20%', right: '15%', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,31,113,0.08), transparent 70%)', pointerEvents: 'none', zIndex: 1 }} />
+
       <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
         <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
       </div>
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 4, opacity: 0.04, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' /%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' /%3E%3C/svg%3E\")" }} />
 
       <LoadingScreen progress={loadProgress} visible={!avatarLoaded} />
 
       {/* Topbar */}
       <div style={{ position: 'absolute', top: 28, left: 0, right: 0, zIndex: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 5%' }}>
         <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#888', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#7c3aff', boxShadow: '0 0 12px #7c3aff', display: 'inline-block' }} />
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 12px #00e5ff', display: 'inline-block' }} />
           A. Mani Tripathi
         </div>
         <nav style={{ display: 'flex', gap: 24, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase' }}>
           {[['#experience', 'Experience'], ['#work', 'Work'], ['#contact', 'Contact']].map(([href, label]) => (
             <a key={label} href={href} style={{ color: '#888', textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseEnter={e => e.target.style.color = '#a78bfa'} onMouseLeave={e => e.target.style.color = '#888'}>
+              onMouseEnter={e => e.target.style.color = '#00e5ff'} onMouseLeave={e => e.target.style.color = '#888'}>
               {label}
             </a>
           ))}
@@ -304,11 +267,11 @@ export default function HeroAvatar() {
 
       {/* Left text */}
       <div className="amt-hero-left" style={{ position: 'absolute', left: '6%', top: '50%', transform: 'translateY(-50%)', zIndex: 10, pointerEvents: 'none' }}>
-        <p style={{ fontSize: '0.95rem', color: '#a78bfa', marginBottom: 8, fontWeight: 400, letterSpacing: '0.04em' }}>Hello, I'm</p>
+        <p style={{ fontSize: '0.95rem', color: '#00e5ff', marginBottom: 8, fontWeight: 400, letterSpacing: '0.04em' }}>Hello, I'm</p>
         <h1 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 0.95, color: '#fff', margin: 0, fontSize: 'clamp(2.2rem, 5vw, 4.2rem)' }}>
           <span style={{ display: 'block' }}>Abhishek</span>
           <span style={{ display: 'block' }}>Mani</span>
-          <span style={{ display: 'block', color: '#a78bfa' }}>Tripathi.</span>
+          <span style={{ display: 'block', color: '#00e5ff', textShadow: '0 0 20px rgba(0,229,255,0.5)' }}>Tripathi.</span>
         </h1>
       </div>
 
@@ -318,15 +281,7 @@ export default function HeroAvatar() {
         <RoleCycler />
       </div>
 
-      {/* Avatar Controls Overlay */}
-      <AvatarControls
-        colorScheme={colorScheme}
-        onColorScheme={setColorScheme}
-        animMode={animMode}
-        onAnimMode={setAnimMode}
-      />
-
-      <div className="amt-scroll-cue-purple" style={{ position: 'absolute', bottom: 32, left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
+      <div className="amt-scroll-cue-purple" style={{ position: 'absolute', bottom: 32, left: '50%', transform: 'translateX(-50%)', zIndex: 10, color: '#00e5ff' }}>
         Scroll
       </div>
     </section>
