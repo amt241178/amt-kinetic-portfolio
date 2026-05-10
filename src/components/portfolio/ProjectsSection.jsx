@@ -29,7 +29,7 @@ function ProjectCard({ project, cardRef }) {
       <div className="amt-project-content">
         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
           {project.pills.map(([text, solid]) => (
-            <span key={text} className={solid ? 'amt-pill-solid' : 'amt-pill-outline'}>{text}</span>
+            <span key={text} style={solid ? { padding: '0.3rem 0.75rem', fontSize: 11, fontWeight: 500, letterSpacing: '0.18em', color: '#050505', textTransform: 'uppercase', background: 'linear-gradient(135deg, #ededed, #ffffff)', borderRadius: 999, boxShadow: '0 4px 12px rgba(0,0,0,0.5)' } : { padding: '0.3rem 0.75rem', fontSize: 11, fontWeight: 500, letterSpacing: '0.18em', color: '#fff', textTransform: 'uppercase', border: '1px solid rgba(167,139,250,0.4)', borderRadius: 999, backdropFilter: 'blur(8px)', background: 'rgba(124,58,255,0.08)' }}>{text}</span>
           ))}
         </div>
         <h3 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2.25rem)', fontWeight: 700, letterSpacing: '-0.02em', color: '#fff', marginBottom: '0.75rem', lineHeight: 1.1, filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.5))' }}>
