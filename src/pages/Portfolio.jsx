@@ -7,7 +7,6 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 // ─── MODELS ───────────────────────────────────────────────────────────────────
 
 const MODELS = [
-  '/model_(0).glb',
   '/model_(1).glb',
   '/model_(2).glb',
   '/model_(3).glb',
@@ -134,9 +133,9 @@ function HeroSection({ modelUrl }) {
 
     const scene = new THREE.Scene();
     sceneRef.current = scene;
-    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 50);
-    camera.position.set(0, 0, 2.6);
-    camera.lookAt(0, 3.0, 0);
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 50);
+    camera.position.set(0, 2.1, 5.5);
+    camera.lookAt(0, 2.1, 0);
 
     const pmrem = new THREE.PMREMGenerator(renderer);
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -195,7 +194,7 @@ function HeroSection({ modelUrl }) {
       }, (xhr) => { if (xhr.total) setLoadProgress(Math.round((xhr.loaded / xhr.total) * 100)); },
       () => { if (fallback) tryLoad(fallback, null); else setAvatarLoaded(true); });
     }
-    tryLoad(modelUrl || MODELS[0], MODELS[1]);
+    tryLoad(modelUrl || MODELS[0], MODELS[0]);
 
     const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
     const onMM = (e) => { mouse.tx = (e.clientX / window.innerWidth) * 2 - 1; mouse.ty = (e.clientY / window.innerHeight) * 2 - 1; };
