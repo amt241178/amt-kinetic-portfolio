@@ -275,9 +275,8 @@ export default function ProjectCard({ project, index, cardRef }) {
             src={project.img}
             alt={project.label}
             style={{
-              position: 'absolute', inset: 0,
-              width: '100%', height: '100%',
-              objectFit: 'cover', objectPosition: 'center top',
+              position: 'absolute', top: 0, left: 0,
+              width: '100%', height: 'auto',
               transition: 'opacity 0.4s ease, filter 0.4s ease',
               filter: hovered ? 'brightness(0.4) blur(1px)' : 'brightness(0.9)',
             }}
