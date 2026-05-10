@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import ProjectCard from '../components/portfolio/ProjectCard';
 import HeroBackground from '../components/portfolio/HeroBackground';
+import SkillCloud from '../components/portfolio/SkillCloud';
 
 // ─── HERO ────────────────────────────────────────────────────────────────────
 
@@ -314,6 +315,7 @@ export default function Portfolio() {
     }}>
       <div style={{ position: 'fixed', top: 0, left: 0, height: '2px', background: '#00e5ff', width: `${scrollProgress}%`, zIndex: 100, transition: 'width 0.1s ease', boxShadow: '0 0 12px #00e5ff' }} />
       <HeroSection mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} theme={theme} toggleTheme={toggleTheme} />
+      <SkillCloud />
       <ExperienceSection />
       <ProjectsSection />
       <ContactSection />
