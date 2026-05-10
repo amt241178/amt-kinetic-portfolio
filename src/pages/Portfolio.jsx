@@ -14,6 +14,37 @@ const MODELS = [
   '/model_(5).glb',
 ];
 
+// ─── POSE FIX ────────────────────────────────────────────────────────────────
+
+function poseArmsDown(scene) {
+  scene.traverse(obj => {
+    if (!obj.isBone && obj.type !== 'Bone') return;
+    const n = obj.name.toLowerCase();
+    // Left upper arm — rotate Z down (negative)
+    if (
+      n === 'mixamorigleftarm' || n === 'leftarm' ||
+      n === 'upper_arm_l' || n === 'upperarm_l' ||
+      n === 'arm_l' || n === 'l_arm' ||
+      n === 'left_arm' || n === 'larm' ||
+      (n.includes('left') && n.includes('arm') && !n.includes('fore') && !n.includes('lower') && !n.includes('hand'))
+    ) {
+      obj.rotation.z = -1.35; // ~77deg down
+      obj.rotation.x = 0;
+    }
+    // Right upper arm — rotate Z up (positive)
+    if (
+      n === 'mixamorigrightarm' || n === 'rightarm' ||
+      n === 'upper_arm_r' || n === 'upperarm_r' ||
+      n === 'arm_r' || n === 'r_arm' ||
+      n === 'right_arm' || n === 'rarm' ||
+      (n.includes('right') && n.includes('arm') && !n.includes('fore') && !n.includes('lower') && !n.includes('hand'))
+    ) {
+      obj.rotation.z = 1.35;
+      obj.rotation.x = 0;
+    }
+  });
+}
+
 // ─── HERO ────────────────────────────────────────────────────────────────────
 
 const SKILLS = ['Event Tech Lead', 'AI Builder', 'Production Strategist', 'Web App Creator', 'Live Streaming Expert', 'No-Code Developer', 'Cvent Certified', 'APAC Specialist'];
@@ -106,6 +137,7 @@ function HeroSection({ modelUrl }) {
           mesh.position.x -= center.x;
           mesh.position.z -= center.z;
           mesh.position.y -= box.min.y;
+          poseArmsDown(mesh);
           newGroup.add(mesh);
           avatarGroupRef.current = newGroup;
           let inOpacity = 0;
@@ -188,6 +220,7 @@ function HeroSection({ modelUrl }) {
         mesh.position.x -= center.x;
         mesh.position.z -= center.z;
         mesh.position.y -= box.min.y;
+        poseArmsDown(mesh);
         avatarGroup.add(mesh);
         setLoadProgress(100);
         setAvatarLoaded(true);
