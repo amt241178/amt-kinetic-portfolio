@@ -17,30 +17,29 @@ const MODELS = [
 // ─── POSE FIX ────────────────────────────────────────────────────────────────
 
 function poseArmsDown(scene) {
+  const armBones = [];
   scene.traverse(obj => {
     if (!obj.isBone && obj.type !== 'Bone') return;
     const n = obj.name.toLowerCase();
-    // Left upper arm — rotate Z down (negative)
-    if (
-      n === 'mixamorigleftarm' || n === 'leftarm' ||
-      n === 'upper_arm_l' || n === 'upperarm_l' ||
-      n === 'arm_l' || n === 'l_arm' ||
-      n === 'left_arm' || n === 'larm' ||
-      (n.includes('left') && n.includes('arm') && !n.includes('fore') && !n.includes('lower') && !n.includes('hand'))
-    ) {
-      obj.rotation.z = -1.35; // ~77deg down
-      obj.rotation.x = 0;
-    }
-    // Right upper arm — rotate Z up (positive)
-    if (
-      n === 'mixamorigrightarm' || n === 'rightarm' ||
-      n === 'upper_arm_r' || n === 'upperarm_r' ||
-      n === 'arm_r' || n === 'r_arm' ||
-      n === 'right_arm' || n === 'rarm' ||
-      (n.includes('right') && n.includes('arm') && !n.includes('fore') && !n.includes('lower') && !n.includes('hand'))
-    ) {
-      obj.rotation.z = 1.35;
-      obj.rotation.x = 0;
+    const isUpperArm = (
+      n.includes('arm') || n.includes('shoulder') || n.includes('upperarm') || n.includes('upper_arm') || n.includes('clavicle')
+    ) && !n.includes('fore') && !n.includes('lower') && !n.includes('hand') && !n.includes('finger') && !n.includes('twist') && !n.includes('roll');
+    if (isUpperArm) armBones.push(obj);
+  });
+
+  armBones.forEach(obj => {
+    const n = obj.name.toLowerCase();
+    const isLeft = n.includes('left') || n.includes('_l') || n.endsWith('.l') || n.startsWith('l_') || n.startsWith('l.');
+    const isRight = n.includes('right') || n.includes('_r') || n.endsWith('.r') || n.startsWith('r_') || n.startsWith('r.');
+
+    if (isLeft) { obj.rotation.z = -1.4; obj.rotation.x = 0; }
+    else if (isRight) { obj.rotation.z = 1.4; obj.rotation.x = 0; }
+    else {
+      // Fallback: use world-space X position to determine side
+      const wp = new THREE.Vector3();
+      obj.getWorldPosition(wp);
+      if (wp.x < 0) { obj.rotation.z = -1.4; obj.rotation.x = 0; }
+      else { obj.rotation.z = 1.4; obj.rotation.x = 0; }
     }
   });
 }
