@@ -240,8 +240,24 @@ function ContactSection() {
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
 export default function Portfolio() {
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight - windowHeight;
+      const scrolled = window.scrollY;
+      const progress = documentHeight > 0 ? (scrolled / documentHeight) * 100 : 0;
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div style={{ background: '#050505', color: '#ededed', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", fontWeight: 400, lineHeight: 1.6, overflowX: 'hidden', WebkitFontSmoothing: 'antialiased' }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, height: '2px', background: '#00e5ff', width: `${scrollProgress}%`, zIndex: 100, transition: 'width 0.1s ease', boxShadow: '0 0 12px #00e5ff' }} />
       <HeroSection />
       <ExperienceSection />
       <ProjectsSection />
