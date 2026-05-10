@@ -65,53 +65,59 @@ function PhotoRing() {
   );
 }
 
-function HeroSection({ mobileMenuOpen, setMobileMenuOpen }) {
+function HeroSection({ mobileMenuOpen, setMobileMenuOpen, theme, toggleTheme }) {
+  const isDark = theme === 'dark';
   return (
     <section id="home" style={{ position: 'relative', width: '100vw', height: '100vh', minHeight: 700, background: '#050505', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 55% 55% at 50% 70%, rgba(0,229,255,0.10) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 2 }} />
       <HeroBackground />
       <PhotoRing />
       {/* Topbar */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 40, padding: '18px 5%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(5,5,5,0.6)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,229,255,0.12)' }}>
-        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#00e5ff', display: 'flex', alignItems: 'center', gap: 10, fontWeight: 600, textShadow: '0 0 12px rgba(0,229,255,0.7)' }}>
-          <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 14px #00e5ff, 0 0 28px #00e5ff', display: 'inline-block' }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 40, padding: '18px 5%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: isDark ? 'rgba(5,5,5,0.6)' : 'rgba(255,255,255,0.7)', backdropFilter: 'blur(12px)', borderBottom: isDark ? '1px solid rgba(0,229,255,0.12)' : '1px solid rgba(0,0,0,0.1)', transition: 'all 0.3s ease' }}>
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, letterSpacing: '0.3em', textTransform: 'uppercase', color: isDark ? '#00e5ff' : '#1a1a1a', display: 'flex', alignItems: 'center', gap: 10, fontWeight: 600, textShadow: isDark ? '0 0 12px rgba(0,229,255,0.7)' : 'none' }}>
+          <span style={{ width: 9, height: 9, borderRadius: '50%', background: isDark ? '#00e5ff' : '#1a1a1a', boxShadow: isDark ? '0 0 14px #00e5ff, 0 0 28px #00e5ff' : 'none', display: 'inline-block' }} />
           ABHISHEK M. TRIPATHI
-          <a href="https://linkedin.com/in/abhishek-mani-tripathi" target="_blank" rel="noopener" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: '50%', background: 'rgba(0,229,255,0.12)', border: '1px solid rgba(0,229,255,0.3)', color: '#00e5ff', textDecoration: 'none', transition: 'all 0.25s', marginLeft: 8 }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.25)'; e.currentTarget.style.boxShadow = '0 0 12px rgba(0,229,255,0.5)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.12)'; e.currentTarget.style.boxShadow = 'none'; }}>
+          <a href="https://linkedin.com/in/abhishek-mani-tripathi" target="_blank" rel="noopener" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: '50%', background: isDark ? 'rgba(0,229,255,0.12)' : 'rgba(0,0,0,0.1)', border: isDark ? '1px solid rgba(0,229,255,0.3)' : '1px solid rgba(0,0,0,0.2)', color: isDark ? '#00e5ff' : '#1a1a1a', textDecoration: 'none', transition: 'all 0.25s', marginLeft: 8 }}
+            onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(0,229,255,0.25)' : 'rgba(0,0,0,0.15)'; e.currentTarget.style.boxShadow = isDark ? '0 0 12px rgba(0,229,255,0.5)' : 'none'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'rgba(0,229,255,0.12)' : 'rgba(0,0,0,0.1)'; e.currentTarget.style.boxShadow = 'none'; }}>
             <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
           </a>
         </div>
         <nav style={{ display: 'flex', gap: 28, alignItems: 'center', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase' }}>
           {[['#experience', 'Experience'], ['#work', 'Work'], ['#contact', 'Contact']].map(([href, label]) => (
-            <a key={label} href={href} style={{ color: '#aaa', textDecoration: 'none', transition: 'color 0.2s, text-shadow 0.2s', fontWeight: 500 }}
-              onMouseEnter={e => { e.target.style.color = '#00e5ff'; e.target.style.textShadow = '0 0 10px rgba(0,229,255,0.7)'; }}
-              onMouseLeave={e => { e.target.style.color = '#aaa'; e.target.style.textShadow = 'none'; }}>{label}</a>
+            <a key={label} href={href} style={{ color: isDark ? '#aaa' : '#666', textDecoration: 'none', transition: 'color 0.2s, text-shadow 0.2s', fontWeight: 500 }}
+              onMouseEnter={e => { e.target.style.color = isDark ? '#00e5ff' : '#1a1a1a'; e.target.style.textShadow = isDark ? '0 0 10px rgba(0,229,255,0.7)' : 'none'; }}
+              onMouseLeave={e => { e.target.style.color = isDark ? '#aaa' : '#666'; e.target.style.textShadow = 'none'; }}>{label}</a>
           ))}
-          <a href="/resume.pdf" target="_blank" rel="noopener" style={{ padding: '7px 18px', borderRadius: 6, border: '1.5px solid #00e5ff', color: '#00e5ff', fontWeight: 600, fontSize: 11, letterSpacing: '0.2em', textDecoration: 'none', background: 'rgba(0,229,255,0.06)', boxShadow: '0 0 12px rgba(0,229,255,0.2)', transition: 'all 0.25s' }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#00e5ff'; e.currentTarget.style.color = '#050505'; e.currentTarget.style.boxShadow = '0 0 24px rgba(0,229,255,0.5)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.06)'; e.currentTarget.style.color = '#00e5ff'; e.currentTarget.style.boxShadow = '0 0 12px rgba(0,229,255,0.2)'; }}>
+          <a href="/resume.pdf" target="_blank" rel="noopener" style={{ padding: '7px 18px', borderRadius: 6, border: isDark ? '1.5px solid #00e5ff' : '1.5px solid #1a1a1a', color: isDark ? '#00e5ff' : '#1a1a1a', fontWeight: 600, fontSize: 11, letterSpacing: '0.2em', textDecoration: 'none', background: isDark ? 'rgba(0,229,255,0.06)' : 'rgba(0,0,0,0.05)', boxShadow: isDark ? '0 0 12px rgba(0,229,255,0.2)' : 'none', transition: 'all 0.25s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = isDark ? '#00e5ff' : '#1a1a1a'; e.currentTarget.style.color = isDark ? '#050505' : '#f5f5f5'; e.currentTarget.style.boxShadow = isDark ? '0 0 24px rgba(0,229,255,0.5)' : 'none'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'rgba(0,229,255,0.06)' : 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = isDark ? '#00e5ff' : '#1a1a1a'; e.currentTarget.style.boxShadow = isDark ? '0 0 12px rgba(0,229,255,0.2)' : 'none'; }}>
             Resume
           </a>
+          <button onClick={toggleTheme} style={{ width: 32, height: 32, borderRadius: 6, background: isDark ? 'rgba(0,229,255,0.12)' : 'rgba(0,0,0,0.1)', border: isDark ? '1px solid rgba(0,229,255,0.3)' : '1px solid rgba(0,0,0,0.2)', color: isDark ? '#00e5ff' : '#1a1a1a', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.25s', fontSize: 16 }}
+            onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(0,229,255,0.25)' : 'rgba(0,0,0,0.15)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'rgba(0,229,255,0.12)' : 'rgba(0,0,0,0.1)'; }}>
+            {isDark ? '☀️' : '🌙'}
+          </button>
         </nav>
         {/* Hamburger Button - Mobile Only */}
-        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ display: 'none', width: 36, height: 36, background: 'rgba(0,229,255,0.12)', border: '1px solid rgba(0,229,255,0.3)', borderRadius: 6, color: '#00e5ff', cursor: 'pointer', alignItems: 'center', justifyContent: 'center', gap: 4, flexDirection: 'column', transition: 'all 0.25s' }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.25)'; e.currentTarget.style.boxShadow = '0 0 12px rgba(0,229,255,0.3)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.12)'; e.currentTarget.style.boxShadow = 'none'; }}>
+        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ display: 'none', width: 36, height: 36, background: isDark ? 'rgba(0,229,255,0.12)' : 'rgba(0,0,0,0.1)', border: isDark ? '1px solid rgba(0,229,255,0.3)' : '1px solid rgba(0,0,0,0.2)', borderRadius: 6, color: isDark ? '#00e5ff' : '#1a1a1a', cursor: 'pointer', alignItems: 'center', justifyContent: 'center', gap: 4, flexDirection: 'column', transition: 'all 0.25s' }}
+          onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(0,229,255,0.25)' : 'rgba(0,0,0,0.15)'; e.currentTarget.style.boxShadow = isDark ? '0 0 12px rgba(0,229,255,0.3)' : 'none'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'rgba(0,229,255,0.12)' : 'rgba(0,0,0,0.1)'; e.currentTarget.style.boxShadow = 'none'; }}>
           {[0, 1, 2].map(i => <div key={i} style={{ width: 16, height: 1.5, background: '#00e5ff', borderRadius: 1, transition: 'all 0.3s', transform: mobileMenuOpen ? (i === 0 ? 'rotate(45deg) translateY(8px)' : i === 1 ? 'opacity(0)' : 'rotate(-45deg) translateY(-8px)') : 'none' }} />)}
         </button>
       </div>
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(5,5,5,0.95)', zIndex: 30, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 24, backdropFilter: 'blur(10px)' }}>
+        <div style={{ position: 'fixed', inset: 0, background: isDark ? 'rgba(5,5,5,0.95)' : 'rgba(255,255,255,0.98)', zIndex: 30, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 24, backdropFilter: 'blur(10px)' }}>
           {[['#experience', 'Experience'], ['#work', 'Work'], ['#contact', 'Contact']].map(([href, label]) => (
-            <a key={label} href={href} onClick={() => setMobileMenuOpen(false)} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#00e5ff', textDecoration: 'none', transition: 'all 0.2s', textShadow: '0 0 10px rgba(0,229,255,0.4)' }}
-              onMouseEnter={e => { e.target.style.textShadow = '0 0 20px rgba(0,229,255,0.7)'; }}
-              onMouseLeave={e => { e.target.style.textShadow = '0 0 10px rgba(0,229,255,0.4)'; }}>{label}</a>
+            <a key={label} href={href} onClick={() => setMobileMenuOpen(false)} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, letterSpacing: '0.25em', textTransform: 'uppercase', color: isDark ? '#00e5ff' : '#1a1a1a', textDecoration: 'none', transition: 'all 0.2s', textShadow: isDark ? '0 0 10px rgba(0,229,255,0.4)' : 'none' }}
+              onMouseEnter={e => { e.target.style.textShadow = isDark ? '0 0 20px rgba(0,229,255,0.7)' : 'none'; }}
+              onMouseLeave={e => { e.target.style.textShadow = isDark ? '0 0 10px rgba(0,229,255,0.4)' : 'none'; }}>{label}</a>
           ))}
-          <a href="/resume.pdf" target="_blank" rel="noopener" onClick={() => setMobileMenuOpen(false)} style={{ padding: '10px 24px', borderRadius: 6, border: '1.5px solid #00e5ff', color: '#00e5ff', fontWeight: 600, fontSize: 12, letterSpacing: '0.2em', textDecoration: 'none', background: 'rgba(0,229,255,0.06)', boxShadow: '0 0 12px rgba(0,229,255,0.2)', transition: 'all 0.25s' }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#00e5ff'; e.currentTarget.style.color = '#050505'; e.currentTarget.style.boxShadow = '0 0 24px rgba(0,229,255,0.5)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.06)'; e.currentTarget.style.color = '#00e5ff'; e.currentTarget.style.boxShadow = '0 0 12px rgba(0,229,255,0.2)'; }}>
+          <a href="/resume.pdf" target="_blank" rel="noopener" onClick={() => setMobileMenuOpen(false)} style={{ padding: '10px 24px', borderRadius: 6, border: isDark ? '1.5px solid #00e5ff' : '1.5px solid #1a1a1a', color: isDark ? '#00e5ff' : '#1a1a1a', fontWeight: 600, fontSize: 12, letterSpacing: '0.2em', textDecoration: 'none', background: isDark ? 'rgba(0,229,255,0.06)' : 'rgba(0,0,0,0.05)', boxShadow: isDark ? '0 0 12px rgba(0,229,255,0.2)' : 'none', transition: 'all 0.25s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = isDark ? '#00e5ff' : '#1a1a1a'; e.currentTarget.style.color = isDark ? '#050505' : '#f5f5f5'; e.currentTarget.style.boxShadow = isDark ? '0 0 24px rgba(0,229,255,0.5)' : 'none'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'rgba(0,229,255,0.06)' : 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = isDark ? '#00e5ff' : '#1a1a1a'; e.currentTarget.style.boxShadow = isDark ? '0 0 12px rgba(0,229,255,0.2)' : 'none'; }}>
             Resume
           </a>
         </div>
@@ -269,6 +275,18 @@ function ContactSection() {
 export default function Portfolio() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [theme, setTheme] = useState('dark');
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('portfolio-theme') || 'dark';
+    setTheme(savedTheme);
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('portfolio-theme', newTheme);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -284,9 +302,18 @@ export default function Portfolio() {
   }, []);
 
   return (
-    <div style={{ background: '#050505', color: '#ededed', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", fontWeight: 400, lineHeight: 1.6, overflowX: 'hidden', WebkitFontSmoothing: 'antialiased' }}>
+    <div style={{
+      background: theme === 'dark' ? '#050505' : '#f5f5f5',
+      color: theme === 'dark' ? '#ededed' : '#1a1a1a',
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      fontWeight: 400,
+      lineHeight: 1.6,
+      overflowX: 'hidden',
+      WebkitFontSmoothing: 'antialiased',
+      transition: 'background 0.3s ease, color 0.3s ease'
+    }}>
       <div style={{ position: 'fixed', top: 0, left: 0, height: '2px', background: '#00e5ff', width: `${scrollProgress}%`, zIndex: 100, transition: 'width 0.1s ease', boxShadow: '0 0 12px #00e5ff' }} />
-      <HeroSection mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+      <HeroSection mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} theme={theme} toggleTheme={toggleTheme} />
       <ExperienceSection />
       <ProjectsSection />
       <ContactSection />
