@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import ProjectCard from '../components/portfolio/ProjectCard';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
@@ -380,26 +381,7 @@ function ProjectsSection() {
         </div>
         <div className="amt-project-grid">
           {projects.map((p, i) => (
-            <article key={p.label} ref={el => cardRefs.current[i] = el} className="amt-project-card">
-              <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }} className="amt-neon-bg">
-                {p.img
-                  ? <img src={p.img} alt={p.label} style={{ width: '100%', height: '100%', objectFit: 'contain', opacity: 1, transition: 'filter 0.5s ease, opacity 0.5s ease', padding: '12px', display: 'block' }} className="amt-img-slot-img" />
-                  : <div className="amt-img-slot" data-label={`16:9 — ${p.label}`} />}
-              </div>
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #080808 0%, rgba(8,8,8,0.8) 50%, transparent 100%)', zIndex: 1 }} />
-              <div className="amt-project-content">
-                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-                  {p.pills.map(([text, solid]) => (
-                    <span key={text} style={solid
-                      ? { padding: '0.3rem 0.75rem', fontSize: 11, fontWeight: 600, letterSpacing: '0.18em', color: '#050505', textTransform: 'uppercase', background: '#00e5ff', borderRadius: 999, boxShadow: '0 0 12px rgba(0,229,255,0.5)' }
-                      : { padding: '0.3rem 0.75rem', fontSize: 11, fontWeight: 500, letterSpacing: '0.18em', color: '#fff', textTransform: 'uppercase', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 999, background: 'rgba(255,255,255,0.05)' }
-                    }>{text}</span>
-                  ))}
-                </div>
-                <h3 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2.25rem)', fontWeight: 700, letterSpacing: '-0.02em', color: '#fff', marginBottom: '0.75rem', lineHeight: 1.1 }}>{p.title}</h3>
-                <p style={{ color: '#e5e5e5', fontSize: '1rem', lineHeight: 1.65, fontWeight: 300 }}>{p.desc}</p>
-              </div>
-            </article>
+            <ProjectCard key={p.label} project={p} index={i} cardRef={el => cardRefs.current[i] = el} />
           ))}
         </div>
       </div>
