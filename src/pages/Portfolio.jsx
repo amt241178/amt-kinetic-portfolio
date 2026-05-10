@@ -65,7 +65,7 @@ function PhotoRing() {
   );
 }
 
-function HeroSection() {
+function HeroSection({ mobileMenuOpen, setMobileMenuOpen }) {
   return (
     <section id="home" style={{ position: 'relative', width: '100vw', height: '100vh', minHeight: 700, background: '#050505', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 55% 55% at 50% 70%, rgba(0,229,255,0.10) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 2 }} />
@@ -94,7 +94,34 @@ function HeroSection() {
             Resume
           </a>
         </nav>
+        {/* Hamburger Button - Mobile Only */}
+        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ display: 'none', width: 36, height: 36, background: 'rgba(0,229,255,0.12)', border: '1px solid rgba(0,229,255,0.3)', borderRadius: 6, color: '#00e5ff', cursor: 'pointer', alignItems: 'center', justifyContent: 'center', gap: 4, flexDirection: 'column', transition: 'all 0.25s' }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.25)'; e.currentTarget.style.boxShadow = '0 0 12px rgba(0,229,255,0.3)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.12)'; e.currentTarget.style.boxShadow = 'none'; }}>
+          {[0, 1, 2].map(i => <div key={i} style={{ width: 16, height: 1.5, background: '#00e5ff', borderRadius: 1, transition: 'all 0.3s', transform: mobileMenuOpen ? (i === 0 ? 'rotate(45deg) translateY(8px)' : i === 1 ? 'opacity(0)' : 'rotate(-45deg) translateY(-8px)') : 'none' }} />)}
+        </button>
       </div>
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(5,5,5,0.95)', zIndex: 30, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 24, backdropFilter: 'blur(10px)' }}>
+          {[['#experience', 'Experience'], ['#work', 'Work'], ['#contact', 'Contact']].map(([href, label]) => (
+            <a key={label} href={href} onClick={() => setMobileMenuOpen(false)} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#00e5ff', textDecoration: 'none', transition: 'all 0.2s', textShadow: '0 0 10px rgba(0,229,255,0.4)' }}
+              onMouseEnter={e => { e.target.style.textShadow = '0 0 20px rgba(0,229,255,0.7)'; }}
+              onMouseLeave={e => { e.target.style.textShadow = '0 0 10px rgba(0,229,255,0.4)'; }}>{label}</a>
+          ))}
+          <a href="/resume.pdf" target="_blank" rel="noopener" onClick={() => setMobileMenuOpen(false)} style={{ padding: '10px 24px', borderRadius: 6, border: '1.5px solid #00e5ff', color: '#00e5ff', fontWeight: 600, fontSize: 12, letterSpacing: '0.2em', textDecoration: 'none', background: 'rgba(0,229,255,0.06)', boxShadow: '0 0 12px rgba(0,229,255,0.2)', transition: 'all 0.25s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#00e5ff'; e.currentTarget.style.color = '#050505'; e.currentTarget.style.boxShadow = '0 0 24px rgba(0,229,255,0.5)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.06)'; e.currentTarget.style.color = '#00e5ff'; e.currentTarget.style.boxShadow = '0 0 12px rgba(0,229,255,0.2)'; }}>
+            Resume
+          </a>
+        </div>
+      )}
+      <style>{`
+        @media (max-width: 768px) {
+          nav { display: none !important; }
+          button { display: flex !important; }
+        }
+      `}</style>
       {/* Left text */}
       <div className="amt-hero-left" style={{ position: 'absolute', left: '6%', top: '50%', transform: 'translateY(-50%)', zIndex: 40, pointerEvents: 'none' }}>
         <p style={{ fontSize: '0.95rem', color: '#00e5ff', marginBottom: 8, fontWeight: 400 }}>Hello, I'm</p>
@@ -241,6 +268,7 @@ function ContactSection() {
 
 export default function Portfolio() {
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -258,7 +286,7 @@ export default function Portfolio() {
   return (
     <div style={{ background: '#050505', color: '#ededed', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", fontWeight: 400, lineHeight: 1.6, overflowX: 'hidden', WebkitFontSmoothing: 'antialiased' }}>
       <div style={{ position: 'fixed', top: 0, left: 0, height: '2px', background: '#00e5ff', width: `${scrollProgress}%`, zIndex: 100, transition: 'width 0.1s ease', boxShadow: '0 0 12px #00e5ff' }} />
-      <HeroSection />
+      <HeroSection mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
       <ExperienceSection />
       <ProjectsSection />
       <ContactSection />
