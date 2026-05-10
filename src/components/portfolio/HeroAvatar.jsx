@@ -9,8 +9,16 @@ const SKILLS = [
 ];
 
 // Primary model; fallback to Model2 if this fails
-const AVATAR_URL = 'https://drive.usercontent.google.com/download?id=19JNLJEdbvuogzR_jO_Ohfwax_ERZJsZS&export=download&confirm=t';
-const AVATAR_URL_2 = 'https://drive.usercontent.google.com/download?id=1i7ZQ48C1mAIoOzwmgwKTrA53Ih43lyrE&export=download&confirm=t';
+const MODELS = [
+  '/model_0.glb',
+  '/model_1.glb',
+  '/model_2.glb',
+  '/model_3.glb',
+  '/model_4.glb',
+  '/model_5.glb',
+];
+const AVATAR_URL = MODELS[1];
+const AVATAR_URL_2 = MODELS[0];
 
 function LoadingScreen({ progress, visible }) {
   const [idx, setIdx] = useState(0);

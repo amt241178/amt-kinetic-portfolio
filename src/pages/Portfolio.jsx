@@ -7,11 +7,12 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 // ─── MODELS ───────────────────────────────────────────────────────────────────
 
 const MODELS = [
-  '/model_(1).glb',
-  '/model_(2).glb',
-  '/model_(3).glb',
-  '/model_(4).glb',
-  '/model_(5).glb',
+  '/model_0.glb',
+  '/model_1.glb',
+  '/model_2.glb',
+  '/model_3.glb',
+  '/model_4.glb',
+  '/model_5.glb',
 ];
 
 // ─── POSE FIX ────────────────────────────────────────────────────────────────
