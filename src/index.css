@@ -327,11 +327,9 @@
   box-shadow: 0 25px 50px -12px rgba(168,85,247,0.10);
 }
 .amt-project-card:hover .amt-img-slot-img {
-  transform: scale(1.1);
-  opacity: 1;
+  filter: brightness(1.2);
 }
 .amt-project-card:hover .amt-img-slot {
-  transform: scale(1.1);
   opacity: 1;
 }
 .amt-project-card:hover .amt-project-content {
@@ -359,8 +357,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.7;
-  transition: transform 0.7s ease, opacity 0.7s ease;
+  opacity: 0.85;
+  transition: opacity 0.5s ease;
   position: relative;
 }
 .amt-img-slot::before {
