@@ -381,7 +381,7 @@ function ProjectsSection() {
         <div className="amt-project-grid">
           {projects.map((p, i) => (
             <article key={p.label} ref={el => cardRefs.current[i] = el} className="amt-project-card">
-              <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }}>
+              <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }} className="amt-neon-bg">
                 {p.img
                   ? <img src={p.img} alt={p.label} style={{ width: '100%', height: '100%', objectFit: 'contain', opacity: 1, transition: 'transform 0.7s ease, opacity 0.7s ease', padding: '12px' }} className="amt-img-slot-img" />
                   : <div className="amt-img-slot" data-label={`16:9 — ${p.label}`} />}

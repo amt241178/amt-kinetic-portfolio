@@ -338,10 +338,24 @@
   transform: translateY(-8px);
 }
 
+@keyframes amt-neon-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.amt-neon-bg {
+  background: linear-gradient(135deg, #001a1a, #003322, #00261a, #001a33, #002233, #00332a);
+  background-size: 400% 400%;
+  animation: amt-neon-shift 6s ease infinite;
+}
+
 .amt-img-slot {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #1a1a1a, #0e0e0e);
+  background: linear-gradient(135deg, #001a1a, #003322, #00261a, #001a33);
+  background-size: 400% 400%;
+  animation: amt-neon-shift 6s ease infinite;
   display: flex;
   align-items: center;
   justify-content: center;
