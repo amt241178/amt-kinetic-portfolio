@@ -4,13 +4,21 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
+// ─── MODELS ───────────────────────────────────────────────────────────────────
+
+const MODELS = [
+  '/model_(0).glb',
+  '/model_(1).glb',
+  '/model_(2).glb',
+  '/model_(3).glb',
+  '/model_(4).glb',
+  '/model_(5).glb',
+];
+
 // ─── HERO ────────────────────────────────────────────────────────────────────
 
 const SKILLS = ['Event Tech Lead', 'AI Builder', 'Production Strategist', 'Web App Creator', 'Live Streaming Expert', 'No-Code Developer', 'Cvent Certified', 'APAC Specialist'];
 const ROLES  = ['Event Tech Lead', 'AI Builder', 'Production Strategist', 'Live Streaming Expert'];
-
-const AVATAR_URL   = '/model1.glb';
-const AVATAR_URL_2 = '/model2.glb';
 
 function LoadingScreen({ progress, visible }) {
   const [idx, setIdx] = useState(0);
@@ -56,10 +64,61 @@ function RoleCycler() {
   );
 }
 
-function HeroSection() {
+function HeroSection({ modelUrl }) {
   const canvasRef = useRef(null);
   const [loadProgress, setLoadProgress] = useState(0);
   const [avatarLoaded, setAvatarLoaded] = useState(false);
+  const sceneRef = useRef(null);
+  const avatarGroupRef = useRef(null);
+  const fadingRef = useRef(false);
+
+  // Cross-fade to new model when modelUrl changes (after initial mount)
+  const initialMountRef = useRef(true);
+  useEffect(() => {
+    if (initialMountRef.current) { initialMountRef.current = false; return; }
+    if (!sceneRef.current || !modelUrl || fadingRef.current) return;
+    const scene = sceneRef.current;
+    const oldGroup = avatarGroupRef.current;
+    if (!oldGroup) return;
+
+    fadingRef.current = true;
+    let opacity = 1;
+    const fadeOut = setInterval(() => {
+      opacity -= 0.1;
+      oldGroup.traverse(c => { if (c.isMesh && c.material) { c.material.transparent = true; c.material.opacity = Math.max(0, opacity); } });
+      if (opacity <= 0) {
+        clearInterval(fadeOut);
+        scene.remove(oldGroup);
+        avatarGroupRef.current = null;
+        const loader = new GLTFLoader();
+        loader.setCrossOrigin('anonymous');
+        const newGroup = new THREE.Group();
+        scene.add(newGroup);
+        loader.load(modelUrl, (gltf) => {
+          const mesh = gltf.scene;
+          mesh.traverse(c => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; c.material.transparent = true; c.material.opacity = 0; } });
+          const box = new THREE.Box3().setFromObject(mesh);
+          const size = new THREE.Vector3();
+          box.getSize(size);
+          mesh.scale.setScalar(4.2 / size.y);
+          box.setFromObject(mesh);
+          const center = new THREE.Vector3();
+          box.getCenter(center);
+          mesh.position.x -= center.x;
+          mesh.position.z -= center.z;
+          mesh.position.y -= box.min.y + 2.4;
+          newGroup.add(mesh);
+          avatarGroupRef.current = newGroup;
+          let inOpacity = 0;
+          const fadeIn = setInterval(() => {
+            inOpacity += 0.1;
+            newGroup.traverse(c => { if (c.isMesh && c.material) c.material.opacity = Math.min(1, inOpacity); });
+            if (inOpacity >= 1) { clearInterval(fadeIn); fadingRef.current = false; }
+          }, 16);
+        }, null, () => { fadingRef.current = false; });
+      }
+    }, 16);
+  }, [modelUrl]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -74,6 +133,7 @@ function HeroSection() {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     const scene = new THREE.Scene();
+    sceneRef.current = scene;
     const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 50);
     camera.position.set(0, 0.4, 5.0);
 
@@ -110,6 +170,7 @@ function HeroSection() {
 
     const avatarGroup = new THREE.Group();
     scene.add(avatarGroup);
+    avatarGroupRef.current = avatarGroup;
 
     const loader = new GLTFLoader();
     loader.setCrossOrigin('anonymous');
@@ -133,7 +194,7 @@ function HeroSection() {
       }, (xhr) => { if (xhr.total) setLoadProgress(Math.round((xhr.loaded / xhr.total) * 100)); },
       () => { if (fallback) tryLoad(fallback, null); else setAvatarLoaded(true); });
     }
-    tryLoad(AVATAR_URL, AVATAR_URL_2);
+    tryLoad(modelUrl || MODELS[0], MODELS[1]);
 
     const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
     const onMM = (e) => { mouse.tx = (e.clientX / window.innerWidth) * 2 - 1; mouse.ty = (e.clientY / window.innerHeight) * 2 - 1; };
@@ -146,10 +207,11 @@ function HeroSection() {
       const t = clock.getElapsedTime();
       mouse.x += (mouse.tx - mouse.x) * 0.06;
       mouse.y += (mouse.ty - mouse.y) * 0.06;
-      if (avatarGroup.children.length) {
-        avatarGroup.rotation.y += ((mouse.x * Math.PI / 7) - avatarGroup.rotation.y) * 0.06;
-        avatarGroup.rotation.x += ((-mouse.y * Math.PI / 14) - avatarGroup.rotation.x) * 0.06;
-        avatarGroup.position.y = Math.sin(t * 1.2) * 0.025;
+      const ag = avatarGroupRef.current;
+      if (ag && ag.children.length) {
+        ag.rotation.y += ((mouse.x * Math.PI / 7) - ag.rotation.y) * 0.06;
+        ag.rotation.x += ((-mouse.y * Math.PI / 14) - ag.rotation.x) * 0.06;
+        ag.position.y = Math.sin(t * 1.2) * 0.025;
       }
       orb.position.x = -2.0 + Math.sin(t * 0.4) * 0.18;
       orb.position.y = 0.5 + Math.sin(t * 0.6) * 0.15;
@@ -340,12 +402,74 @@ function ContactSection() {
   );
 }
 
+// ─── AVATURN MODAL ────────────────────────────────────────────────────────────
+
+function AvaturnModal({ onClose, onExport }) {
+  useEffect(() => {
+    function handleMessage(event) {
+      if (event.data?.source === 'avaturn' && event.data?.eventName === 'v2.avatar.exported') {
+        const url = event.data?.data?.url;
+        if (url) { onExport(url); onClose(); }
+      }
+    }
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [onExport, onClose]);
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ position: 'relative', width: '90vw', maxWidth: 900, height: '80vh', borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(0,229,255,0.3)', boxShadow: '0 0 60px rgba(0,229,255,0.2)' }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '50%', width: 36, height: 36, cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+        <div id="avaturn-sdk-container" style={{ width: '100%', height: '100%' }}>
+          <iframe
+            src="https://avaturn.me/embed"
+            title="Avaturn Avatar Creator"
+            allow="camera; microphone"
+            style={{ width: '100%', height: '100%', border: 'none' }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
 export default function Portfolio() {
+  const [currentModelUrl, setCurrentModelUrl] = useState(MODELS[0]);
+  const [showAvaturn, setShowAvaturn] = useState(false);
+  const lastIndexRef = useRef(0);
+
+  useEffect(() => {
+    let ticking = false;
+    const cards = document.querySelectorAll('.amt-project-card');
+    if (!cards.length) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (ticking) return;
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          ticking = true;
+          let newIndex;
+          do { newIndex = Math.floor(Math.random() * MODELS.length); } while (newIndex === lastIndexRef.current && MODELS.length > 1);
+          lastIndexRef.current = newIndex;
+          setCurrentModelUrl(MODELS[newIndex]);
+          setTimeout(() => { ticking = false; }, 1500);
+        }
+      });
+    }, { threshold: 0.5 });
+    cards.forEach(card => observer.observe(card));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div style={{ background: '#050505', color: '#ededed', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", fontWeight: 400, lineHeight: 1.6, overflowX: 'hidden', WebkitFontSmoothing: 'antialiased' }}>
-      <HeroSection />
+      {showAvaturn && (
+        <AvaturnModal
+          onClose={() => setShowAvaturn(false)}
+          onExport={(url) => setCurrentModelUrl(url)}
+        />
+      )}
+      <HeroSection modelUrl={currentModelUrl} />
       <ExperienceSection />
       <ProjectsSection />
       <ContactSection />
@@ -353,6 +477,15 @@ export default function Portfolio() {
         <p style={{ color: '#555', fontSize: '0.875rem', marginBottom: '0.5rem' }}>© {new Date().getFullYear()} Abhishek Mani Tripathi. All rights reserved.</p>
         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#333' }}>Built with Three.js · Designed with care</p>
       </footer>
+      {/* Avaturn FAB */}
+      <button
+        onClick={() => setShowAvaturn(true)}
+        style={{ position: 'fixed', bottom: 28, right: 28, zIndex: 100, display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 999, background: 'rgba(5,5,5,0.9)', border: '1.5px solid #00e5ff', color: '#00e5ff', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', cursor: 'pointer', backdropFilter: 'blur(12px)', boxShadow: '0 0 20px rgba(0,229,255,0.2)', transition: 'all 0.25s ease' }}
+        onMouseEnter={e => { e.currentTarget.style.background = '#00e5ff'; e.currentTarget.style.color = '#050505'; e.currentTarget.style.boxShadow = '0 0 30px rgba(0,229,255,0.5)'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(5,5,5,0.9)'; e.currentTarget.style.color = '#00e5ff'; e.currentTarget.style.boxShadow = '0 0 20px rgba(0,229,255,0.2)'; }}
+      >
+        ✦ Customize Avatar
+      </button>
     </div>
   );
 }
