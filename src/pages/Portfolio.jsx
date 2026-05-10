@@ -1,82 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import ProjectCard from '../components/portfolio/ProjectCard';
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-
-// ─── MODELS ───────────────────────────────────────────────────────────────────
-
-const MODELS = [
-  '/model_0.glb',
-  '/model_1.glb',
-  '/model_2.glb',
-  '/model_3.glb',
-  '/model_4.glb',
-  '/model_5.glb',
-];
-
-// ─── POSE FIX ────────────────────────────────────────────────────────────────
-
-function poseArmsDown(scene) {
-  const armBones = [];
-  scene.traverse(obj => {
-    if (!obj.isBone && obj.type !== 'Bone') return;
-    const n = obj.name.toLowerCase();
-    const isUpperArm = (
-      n.includes('arm') || n.includes('shoulder') || n.includes('upperarm') || n.includes('upper_arm') || n.includes('clavicle')
-    ) && !n.includes('fore') && !n.includes('lower') && !n.includes('hand') && !n.includes('finger') && !n.includes('twist') && !n.includes('roll');
-    if (isUpperArm) armBones.push(obj);
-  });
-
-  armBones.forEach(obj => {
-    const n = obj.name.toLowerCase();
-    const isLeft = n.includes('left') || n.includes('_l') || n.endsWith('.l') || n.startsWith('l_') || n.startsWith('l.');
-    const isRight = n.includes('right') || n.includes('_r') || n.endsWith('.r') || n.startsWith('r_') || n.startsWith('r.');
-
-    if (isLeft) { obj.rotation.z = -1.4; obj.rotation.x = 0; }
-    else if (isRight) { obj.rotation.z = 1.4; obj.rotation.x = 0; }
-    else {
-      // Fallback: use world-space X position to determine side
-      const wp = new THREE.Vector3();
-      obj.getWorldPosition(wp);
-      if (wp.x < 0) { obj.rotation.z = -1.4; obj.rotation.x = 0; }
-      else { obj.rotation.z = 1.4; obj.rotation.x = 0; }
-    }
-  });
-}
+import HeroBackground from '../components/portfolio/HeroBackground';
 
 // ─── HERO ────────────────────────────────────────────────────────────────────
 
 const SKILLS = ['Event Tech Lead', 'AI Builder', 'Production Strategist', 'Web App Creator', 'Live Streaming Expert', 'No-Code Developer', 'Cvent Certified', 'APAC Specialist'];
 const ROLES  = ['Event Tech Lead', 'AI Builder', 'Production Strategist', 'Live Streaming Expert'];
-
-function LoadingScreen({ progress, visible }) {
-  const [idx, setIdx] = useState(0);
-  const [show, setShow] = useState(true);
-  useEffect(() => {
-    const t = setInterval(() => {
-      setShow(false);
-      setTimeout(() => { setIdx(i => (i + 1) % SKILLS.length); setShow(true); }, 300);
-    }, 1200);
-    return () => clearInterval(t);
-  }, []);
-  return (
-    <div style={{ position: 'absolute', inset: 0, zIndex: 3, background: '#050505', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 32, opacity: visible ? 1 : 0, pointerEvents: visible ? 'auto' : 'none', transition: 'opacity 0.7s ease' }}>
-      <div style={{ position: 'relative', width: 80, height: 80 }}>
-        <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'radial-gradient(circle, #00e5ff 0%, #006080 60%, transparent 100%)', filter: 'blur(8px)', animation: 'amt-pulse-orb 1.4s ease-in-out infinite' }} />
-        <div style={{ position: 'absolute', inset: 16, borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 30px #00e5ff', animation: 'amt-pulse-orb 1.4s ease-in-out infinite' }} />
-      </div>
-      <div style={{ textAlign: 'center', height: 60, display: 'flex', alignItems: 'center' }}>
-        <div style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: 'clamp(1.4rem, 4vw, 2.2rem)', letterSpacing: '-0.03em', background: 'linear-gradient(135deg, #ffffff, #00e5ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', opacity: show ? 1 : 0, transform: show ? 'translateY(0)' : 'translateY(12px)', transition: 'opacity 0.3s ease, transform 0.3s ease' }}>{SKILLS[idx]}</div>
-      </div>
-      <div style={{ width: 200, height: 2, background: 'rgba(255,255,255,0.08)', borderRadius: 2, overflow: 'hidden' }}>
-        <div style={{ height: '100%', borderRadius: 2, background: 'linear-gradient(90deg, #00e5ff, #fff)', width: `${progress}%`, transition: 'width 0.3s ease', boxShadow: '0 0 8px #00e5ff' }} />
-      </div>
-      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#555' }}>Loading · {Math.round(progress)}%</div>
-    </div>
-  );
-}
 
 function RoleCycler() {
   const [idx, setIdx] = useState(0);
@@ -95,178 +25,11 @@ function RoleCycler() {
   );
 }
 
-function HeroSection({ modelUrl }) {
-  const canvasRef = useRef(null);
-  const [loadProgress, setLoadProgress] = useState(0);
-  const [avatarLoaded, setAvatarLoaded] = useState(false);
-  const sceneRef = useRef(null);
-  const avatarGroupRef = useRef(null);
-  const fadingRef = useRef(false);
-
-  // Cross-fade to new model when modelUrl changes (after initial mount)
-  const initialMountRef = useRef(true);
-  useEffect(() => {
-    if (initialMountRef.current) { initialMountRef.current = false; return; }
-    if (!sceneRef.current || !modelUrl || fadingRef.current) return;
-    const scene = sceneRef.current;
-    const oldGroup = avatarGroupRef.current;
-    if (!oldGroup) return;
-
-    fadingRef.current = true;
-    let opacity = 1;
-    const fadeOut = setInterval(() => {
-      opacity -= 0.1;
-      oldGroup.traverse(c => { if (c.isMesh && c.material) { c.material.transparent = true; c.material.opacity = Math.max(0, opacity); } });
-      if (opacity <= 0) {
-        clearInterval(fadeOut);
-        scene.remove(oldGroup);
-        avatarGroupRef.current = null;
-        const loader = new GLTFLoader();
-        loader.setCrossOrigin('anonymous');
-        const newGroup = new THREE.Group();
-        scene.add(newGroup);
-        loader.load(modelUrl, (gltf) => {
-          const mesh = gltf.scene;
-          mesh.traverse(c => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; c.material.transparent = true; c.material.opacity = 0; } });
-          const box = new THREE.Box3().setFromObject(mesh);
-          const size = new THREE.Vector3();
-          box.getSize(size);
-          mesh.scale.setScalar(4.2 / size.y);
-          box.setFromObject(mesh);
-          const center = new THREE.Vector3();
-          box.getCenter(center);
-          mesh.position.x -= center.x;
-          mesh.position.z -= center.z;
-          mesh.position.y -= box.min.y;
-          poseArmsDown(mesh);
-          newGroup.add(mesh);
-          avatarGroupRef.current = newGroup;
-          let inOpacity = 0;
-          const fadeIn = setInterval(() => {
-            inOpacity += 0.1;
-            newGroup.traverse(c => { if (c.isMesh && c.material) c.material.opacity = Math.min(1, inOpacity); });
-            if (inOpacity >= 1) { clearInterval(fadeIn); fadingRef.current = false; }
-          }, 16);
-        }, null, () => { fadingRef.current = false; });
-      }
-    }, 16);
-  }, [modelUrl]);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-    const scene = new THREE.Scene();
-    sceneRef.current = scene;
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 50);
-    camera.position.set(0, 2.1, 5.5);
-    camera.lookAt(0, 2.1, 0);
-
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-
-    scene.add(new THREE.AmbientLight(0xffffff, 0.12));
-    const key = new THREE.DirectionalLight(0xffffff, 1.6);
-    key.position.set(-3, 4, 3);
-    key.castShadow = true;
-    scene.add(key);
-
-    const rim = new THREE.PointLight(0x00e5ff, 14, 10);
-    rim.position.set(0, 2, -3);
-    scene.add(rim);
-
-    const fill = new THREE.PointLight(0xffffff, 0.5, 12);
-    fill.position.set(4, 0.5, 1);
-    scene.add(fill);
-
-    const kicker = new THREE.PointLight(0xff1f71, 1.0, 6);
-    kicker.position.set(-2.5, -1, 2);
-    scene.add(kicker);
-
-    const haloMat = new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.07, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
-    const halo = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), haloMat);
-    halo.position.set(0, 0.5, -1.8);
-    scene.add(halo);
-
-    const orbMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, emissive: 0x00e5ff, emissiveIntensity: 3, toneMapped: false });
-    const orb = new THREE.Mesh(new THREE.SphereGeometry(0.12, 32, 32), orbMat);
-    orb.position.set(-2.0, 0.5, 0.5);
-    scene.add(orb);
-
-    const avatarGroup = new THREE.Group();
-    scene.add(avatarGroup);
-    avatarGroupRef.current = avatarGroup;
-
-    const loader = new GLTFLoader();
-    loader.setCrossOrigin('anonymous');
-    function tryLoad(url, fallback) {
-      loader.load(url, (gltf) => {
-        const mesh = gltf.scene;
-        mesh.traverse(c => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } });
-        const box = new THREE.Box3().setFromObject(mesh);
-        const size = new THREE.Vector3();
-        box.getSize(size);
-        mesh.scale.setScalar(4.2 / size.y);
-        box.setFromObject(mesh);
-        const center = new THREE.Vector3();
-        box.getCenter(center);
-        mesh.position.x -= center.x;
-        mesh.position.z -= center.z;
-        mesh.position.y -= box.min.y;
-        poseArmsDown(mesh);
-        avatarGroup.add(mesh);
-        setLoadProgress(100);
-        setAvatarLoaded(true);
-      }, (xhr) => { if (xhr.total) setLoadProgress(Math.round((xhr.loaded / xhr.total) * 100)); },
-      () => { if (fallback) tryLoad(fallback, null); else setAvatarLoaded(true); });
-    }
-    tryLoad(modelUrl || MODELS[0], MODELS[0]);
-
-    const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
-    const onMM = (e) => { mouse.tx = (e.clientX / window.innerWidth) * 2 - 1; mouse.ty = (e.clientY / window.innerHeight) * 2 - 1; };
-    window.addEventListener('mousemove', onMM);
-
-    const clock = new THREE.Clock();
-    let raf;
-    function animate() {
-      raf = requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
-      mouse.x += (mouse.tx - mouse.x) * 0.06;
-      mouse.y += (mouse.ty - mouse.y) * 0.06;
-      const ag = avatarGroupRef.current;
-      if (ag && ag.children.length) {
-        ag.rotation.y += ((mouse.x * Math.PI / 7) - ag.rotation.y) * 0.06;
-        ag.rotation.x += ((-mouse.y * Math.PI / 14) - ag.rotation.x) * 0.06;
-        ag.position.y = Math.sin(t * 1.2) * 0.025;
-      }
-      orb.position.x = -2.0 + Math.sin(t * 0.4) * 0.18;
-      orb.position.y = 0.5 + Math.sin(t * 0.6) * 0.15;
-      haloMat.opacity = 0.07 + Math.sin(t * 0.8) * 0.02;
-      rim.intensity = 12 + Math.sin(t * 0.5) * 2;
-      renderer.render(scene, camera);
-    }
-    animate();
-
-    const onResize = () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); };
-    window.addEventListener('resize', onResize);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('mousemove', onMM); window.removeEventListener('resize', onResize); renderer.dispose(); };
-  }, []);
-
+function HeroSection() {
   return (
     <section id="home" style={{ position: 'relative', width: '100vw', height: '100vh', minHeight: 700, background: '#050505', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 55% 55% at 50% 70%, rgba(0,229,255,0.12) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 1 }} />
-      <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
-        <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
-      </div>
-      <LoadingScreen progress={loadProgress} visible={!avatarLoaded} />
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 55% 55% at 50% 70%, rgba(0,229,255,0.10) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 2 }} />
+      <HeroBackground />
       <div style={{ position: 'absolute', top: 28, left: 0, right: 0, zIndex: 40, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 5%' }}>
         <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#888', display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 12px #00e5ff', display: 'inline-block' }} />
@@ -422,42 +185,15 @@ function ContactSection() {
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
 export default function Portfolio() {
-  const [currentModelUrl, setCurrentModelUrl] = useState(MODELS[1]);
-  const lastIndexRef = useRef(0);
-  const cooldownRef = useRef(false);
-
-  const switchModel = () => {
-    if (cooldownRef.current) return;
-    cooldownRef.current = true;
-    let newIndex;
-    do { newIndex = Math.floor(Math.random() * MODELS.length); } while (newIndex === lastIndexRef.current && MODELS.length > 1);
-    lastIndexRef.current = newIndex;
-    setCurrentModelUrl(MODELS[newIndex]);
-    setTimeout(() => { cooldownRef.current = false; }, 1500);
-  };
-
-  useEffect(() => {
-    // Switch on scroll
-    const onScroll = () => switchModel();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    // Switch on click anywhere
-    const onClick = () => switchModel();
-    window.addEventListener('click', onClick);
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('click', onClick);
-    };
-  }, []);
-
   return (
     <div style={{ background: '#050505', color: '#ededed', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", fontWeight: 400, lineHeight: 1.6, overflowX: 'hidden', WebkitFontSmoothing: 'antialiased' }}>
-      <HeroSection modelUrl={currentModelUrl} />
+      <HeroSection />
       <ExperienceSection />
       <ProjectsSection />
       <ContactSection />
       <footer style={{ padding: '3rem 1rem', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.05)', background: '#050505' }}>
         <p style={{ color: '#555', fontSize: '0.875rem', marginBottom: '0.5rem' }}>© {new Date().getFullYear()} Abhishek Mani Tripathi. All rights reserved.</p>
-        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#333' }}>Built with Three.js · Designed with care</p>
+        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#333' }}>Designed with care</p>
       </footer>
     </div>
   );
