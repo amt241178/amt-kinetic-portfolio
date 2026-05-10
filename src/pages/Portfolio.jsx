@@ -5,8 +5,8 @@ import HeroBackground from '../components/portfolio/HeroBackground';
 
 // ─── HERO ────────────────────────────────────────────────────────────────────
 
-const SKILLS = ['Event Tech Lead', 'AI Builder', 'Production Strategist', 'Web App Creator', 'Live Streaming Expert', 'No-Code Developer', 'Cvent Certified', 'APAC Specialist'];
-const ROLES  = ['Event Tech Lead', 'AI Builder', 'Production Strategist', 'Live Streaming Expert'];
+const ROLES = ['Event Tech Lead', 'AI Builder', 'Production Strategist', 'Live Streaming Expert'];
+const PHOTO_URL = 'https://media.base44.com/images/public/6a0095ba0fd898883f2ce8d9/6ff7494a8_unnamed1.jpg';
 
 function RoleCycler() {
   const [idx, setIdx] = useState(0);
@@ -25,11 +25,53 @@ function RoleCycler() {
   );
 }
 
+function PhotoRing() {
+  return (
+    <div style={{
+      position: 'absolute', top: '50%', left: '50%',
+      transform: 'translate(-50%, -50%)',
+      zIndex: 10, pointerEvents: 'none',
+      width: 320, height: 320,
+    }}>
+      {/* Glow orbs */}
+      <div style={{ position: 'absolute', top: -50, right: -50, width: 200, height: 200, background: 'radial-gradient(circle, #00e5ff 0%, transparent 70%)', filter: 'blur(55px)', opacity: 0.22 }} />
+      <div style={{ position: 'absolute', bottom: -40, left: -40, width: 180, height: 180, background: 'radial-gradient(circle, #00e5ff 0%, transparent 70%)', filter: 'blur(60px)', opacity: 0.15 }} />
+      {/* Rotating text ring */}
+      <div style={{ position: 'absolute', inset: 0, animation: 'pf-rotating-ring 22s linear infinite' }}>
+        <svg viewBox="0 0 320 320" width="320" height="320">
+          <defs>
+            <path id="circlePath" d="M 160,160 m -140,0 a 140,140 0 1,1 280,0 a 140,140 0 1,1 -280,0" />
+          </defs>
+          <text fill="#555" fontFamily="'JetBrains Mono', monospace" fontSize="9.5" letterSpacing="0.28em">
+            <textPath href="#circlePath" startOffset="0%">
+              EVENT TECH • AI BUILDER • LIVE STREAMING • CREATIVE TECHNOLOGY •
+            </textPath>
+          </text>
+        </svg>
+      </div>
+      {/* Photo circle */}
+      <div style={{
+        position: 'absolute', inset: 26, borderRadius: '50%', overflow: 'hidden',
+        border: '2px solid #00e5ff',
+        boxShadow: '0 0 0 8px rgba(0,229,255,0.07), 0 0 50px rgba(0,229,255,0.30), inset 0 0 30px rgba(0,0,0,0.4)',
+      }}>
+        <img
+          src={PHOTO_URL}
+          alt="Abhishek Mani Tripathi"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+        />
+      </div>
+    </div>
+  );
+}
+
 function HeroSection() {
   return (
     <section id="home" style={{ position: 'relative', width: '100vw', height: '100vh', minHeight: 700, background: '#050505', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 55% 55% at 50% 70%, rgba(0,229,255,0.10) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 2 }} />
       <HeroBackground />
+      <PhotoRing />
+      {/* Topbar */}
       <div style={{ position: 'absolute', top: 28, left: 0, right: 0, zIndex: 40, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 5%' }}>
         <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#888', display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 12px #00e5ff', display: 'inline-block' }} />
@@ -42,6 +84,7 @@ function HeroSection() {
           ))}
         </nav>
       </div>
+      {/* Left text */}
       <div className="amt-hero-left" style={{ position: 'absolute', left: '6%', top: '50%', transform: 'translateY(-50%)', zIndex: 40, pointerEvents: 'none' }}>
         <p style={{ fontSize: '0.95rem', color: '#00e5ff', marginBottom: 8, fontWeight: 400 }}>Hello, I'm</p>
         <h1 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 0.95, color: '#fff', margin: 0, fontSize: 'clamp(2.2rem, 5vw, 4.2rem)' }}>
@@ -50,6 +93,7 @@ function HeroSection() {
           <span style={{ display: 'block', color: '#00e5ff', textShadow: '0 0 20px rgba(0,229,255,0.5)' }}>Tripathi.</span>
         </h1>
       </div>
+      {/* Right text */}
       <div className="amt-hero-right" style={{ position: 'absolute', right: '6%', top: '50%', transform: 'translateY(-50%)', zIndex: 40, textAlign: 'right', pointerEvents: 'none' }}>
         <p style={{ fontSize: '0.95rem', color: '#d1d1d1', marginBottom: 8 }}>I am an</p>
         <RoleCycler />
