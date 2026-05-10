@@ -76,6 +76,11 @@ function HeroSection() {
         <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#00e5ff', display: 'flex', alignItems: 'center', gap: 10, fontWeight: 600, textShadow: '0 0 12px rgba(0,229,255,0.7)' }}>
           <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 14px #00e5ff, 0 0 28px #00e5ff', display: 'inline-block' }} />
           ABHISHEK M. TRIPATHI
+          <a href="https://linkedin.com/in/abhishek-mani-tripathi" target="_blank" rel="noopener" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: '50%', background: 'rgba(0,229,255,0.12)', border: '1px solid rgba(0,229,255,0.3)', color: '#00e5ff', textDecoration: 'none', transition: 'all 0.25s', marginLeft: 8 }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.25)'; e.currentTarget.style.boxShadow = '0 0 12px rgba(0,229,255,0.5)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.12)'; e.currentTarget.style.boxShadow = 'none'; }}>
+            <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+          </a>
         </div>
         <nav style={{ display: 'flex', gap: 28, alignItems: 'center', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase' }}>
           {[['#experience', 'Experience'], ['#work', 'Work'], ['#contact', 'Contact']].map(([href, label]) => (
