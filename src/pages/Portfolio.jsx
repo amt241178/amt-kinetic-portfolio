@@ -438,7 +438,7 @@ function ContactSection() {
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
 export default function Portfolio() {
-  const [currentModelUrl, setCurrentModelUrl] = useState(MODELS[0]);
+  const [currentModelUrl, setCurrentModelUrl] = useState(MODELS[1]);
   const lastIndexRef = useRef(0);
   const cooldownRef = useRef(false);
 
