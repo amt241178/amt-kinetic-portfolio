@@ -383,7 +383,7 @@ function ProjectsSection() {
             <article key={p.label} ref={el => cardRefs.current[i] = el} className="amt-project-card">
               <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }}>
                 {p.img
-                  ? <img src={p.img} alt={p.label} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7, transition: 'transform 0.7s ease, opacity 0.7s ease' }} className="amt-img-slot-img" />
+                  ? <img src={p.img} alt={p.label} style={{ width: '100%', height: '100%', objectFit: 'contain', opacity: 1, transition: 'transform 0.7s ease, opacity 0.7s ease', padding: '12px' }} className="amt-img-slot-img" />
                   : <div className="amt-img-slot" data-label={`16:9 — ${p.label}`} />}
               </div>
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #080808 0%, rgba(8,8,8,0.8) 50%, transparent 100%)', zIndex: 1 }} />
