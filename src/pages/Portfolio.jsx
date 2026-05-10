@@ -64,6 +64,19 @@ function RoleCycler() {
   );
 }
 
+// Force arms down from T-pose by rotating upper-arm bones
+function poseArmsDown(mesh) {
+  mesh.traverse(bone => {
+    if (!bone.isBone && !bone.isSkinnedMesh) return;
+    if (!bone.isBone) return;
+    const n = bone.name.toLowerCase();
+    const isLeftUpper = (n.includes('leftarm') || n.includes('left_arm') || n.includes('upperarm_l') || n.includes('l_upperarm') || n.includes('arm_l')) && !n.includes('fore') && !n.includes('lower') && !n.includes('hand');
+    const isRightUpper = (n.includes('rightarm') || n.includes('right_arm') || n.includes('upperarm_r') || n.includes('r_upperarm') || n.includes('arm_r')) && !n.includes('fore') && !n.includes('lower') && !n.includes('hand');
+    if (isLeftUpper) bone.rotation.z = -1.3;
+    if (isRightUpper) bone.rotation.z = 1.3;
+  });
+}
+
 function HeroSection({ modelUrl }) {
   const canvasRef = useRef(null);
   const [loadProgress, setLoadProgress] = useState(0);
@@ -108,6 +121,7 @@ function HeroSection({ modelUrl }) {
           mesh.position.z -= center.z;
           mesh.position.y -= box.min.y + 2.4;
           newGroup.add(mesh);
+          poseArmsDown(mesh);
           avatarGroupRef.current = newGroup;
           let inOpacity = 0;
           const fadeIn = setInterval(() => {
@@ -189,6 +203,7 @@ function HeroSection({ modelUrl }) {
         mesh.position.z -= center.z;
         mesh.position.y -= box.min.y + 2.4;
         avatarGroup.add(mesh);
+        poseArmsDown(mesh);
         setLoadProgress(100);
         setAvatarLoaded(true);
       }, (xhr) => { if (xhr.total) setLoadProgress(Math.round((xhr.loaded / xhr.total) * 100)); },
