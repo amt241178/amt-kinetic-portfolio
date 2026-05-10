@@ -75,7 +75,7 @@ function HeroSection() {
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 40, padding: '18px 5%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(5,5,5,0.6)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,229,255,0.12)' }}>
         <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#00e5ff', display: 'flex', alignItems: 'center', gap: 10, fontWeight: 600, textShadow: '0 0 12px rgba(0,229,255,0.7)' }}>
           <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 14px #00e5ff, 0 0 28px #00e5ff', display: 'inline-block' }} />
-          A. Mani Tripathi
+          ABHISHEK M. TRIPATHI
         </div>
         <nav style={{ display: 'flex', gap: 28, alignItems: 'center', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase' }}>
           {[['#experience', 'Experience'], ['#work', 'Work'], ['#contact', 'Contact']].map(([href, label]) => (
@@ -255,7 +255,7 @@ export default function Portfolio() {
         </div>
         <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#00e5ff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: '0.75rem', textShadow: '0 0 10px rgba(0,229,255,0.5)' }}>
           <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 10px #00e5ff', display: 'inline-block' }} />
-          A. Mani Tripathi
+          ABHISHEK M. TRIPATHI
         </div>
         <p style={{ color: '#555', fontSize: '0.8rem', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.15em', marginBottom: '0.4rem' }}>© {new Date().getFullYear()} All rights reserved.</p>
         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#333' }}>Designed with care</p>
