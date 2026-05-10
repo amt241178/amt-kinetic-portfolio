@@ -119,7 +119,7 @@ function HeroSection({ modelUrl }) {
           box.getCenter(center);
           mesh.position.x -= center.x;
           mesh.position.z -= center.z;
-          mesh.position.y -= box.min.y + 2.4;
+          mesh.position.y -= box.min.y + 1.2;
           newGroup.add(mesh);
           poseArmsDown(mesh);
           avatarGroupRef.current = newGroup;
@@ -148,8 +148,8 @@ function HeroSection({ modelUrl }) {
 
     const scene = new THREE.Scene();
     sceneRef.current = scene;
-    const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 50);
-    camera.position.set(0, 0.4, 5.0);
+    const camera = new THREE.PerspectiveCamera(22, window.innerWidth / window.innerHeight, 0.1, 50);
+    camera.position.set(0, 1.2, 4.5);
 
     const pmrem = new THREE.PMREMGenerator(renderer);
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -201,7 +201,7 @@ function HeroSection({ modelUrl }) {
         box.getCenter(center);
         mesh.position.x -= center.x;
         mesh.position.z -= center.z;
-        mesh.position.y -= box.min.y + 2.4;
+        mesh.position.y -= box.min.y + 1.2;
         avatarGroup.add(mesh);
         poseArmsDown(mesh);
         setLoadProgress(100);
