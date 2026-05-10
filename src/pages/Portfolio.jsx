@@ -141,7 +141,7 @@ function ExperienceSection() {
 
   return (
     <section id="experience" style={{ background: '#080808', padding: '8rem 1rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-      <div style={{ maxWidth: '56rem', margin: '0 auto', padding: '0 1rem' }}>
+      <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7 }} style={{ maxWidth: '56rem', margin: '0 auto', padding: '0 1rem' }}>
         <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#00e5ff', textAlign: 'center', marginBottom: '1rem' }}>The Journey</div>
         <h2 style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', fontWeight: 700, letterSpacing: '-0.04em', textAlign: 'center', marginBottom: '4rem', color: '#fff', lineHeight: 1 }}>Career Timeline</h2>
         <div style={{ position: 'relative', borderLeft: '1px solid rgba(255,255,255,0.15)', paddingLeft: '2.5rem' }}>
@@ -155,7 +155,7 @@ function ExperienceSection() {
             </div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
@@ -192,7 +192,7 @@ function ProjectsSection() {
 
   return (
     <section id="work" style={{ background: '#0a0a0a', padding: '8rem 2rem', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-      <div style={{ maxWidth: '80rem', margin: '0 auto' }}>
+      <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.8 }} style={{ maxWidth: '80rem', margin: '0 auto' }}>
         <div style={{ marginBottom: '4rem' }}>
           <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#00e5ff', marginBottom: '1rem' }}>Selected Works</div>
           <h2 style={{ fontSize: 'clamp(2.75rem, 9vw, 7rem)', fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 0.95, color: '#fff' }}>Things I've Shipped.</h2>
@@ -202,7 +202,7 @@ function ProjectsSection() {
             <ProjectCard key={p.label} project={p} index={i} cardRef={el => cardRefs.current[i] = el} />
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
