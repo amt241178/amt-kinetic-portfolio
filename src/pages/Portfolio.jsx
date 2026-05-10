@@ -148,7 +148,7 @@ function ExperienceSection() {
           {jobs.map((job, i) => (
             <div key={job.company} ref={el => itemRefs.current[i] = el} className="amt-timeline-item" style={{ position: 'relative', paddingBottom: i < jobs.length - 1 ? '3rem' : 0 }}>
               <div style={{ position: 'absolute', left: '-2.93rem', top: '0.6rem', width: 10, height: 10, borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 12px #00e5ff' }} />
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#555', marginBottom: '0.75rem' }}>{job.period}</div>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#00e5ff', fontWeight: 700, marginBottom: '0.75rem', textShadow: '0 0 10px rgba(0,229,255,0.6)' }}>{job.period}</div>
               <div style={{ fontSize: 'clamp(1.5rem, 2.5vw, 1.875rem)', fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: '0.25rem' }}>{job.company}</div>
               <div style={{ fontSize: '1.125rem', color: '#888', marginBottom: '0.875rem', fontWeight: 400 }}>{job.role}</div>
               <p style={{ color: '#d1d1d1', lineHeight: 1.7, fontSize: '1rem', fontWeight: 300 }}>{job.desc}</p>
