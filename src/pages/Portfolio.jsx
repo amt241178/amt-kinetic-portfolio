@@ -72,16 +72,22 @@ function HeroSection() {
       <HeroBackground />
       <PhotoRing />
       {/* Topbar */}
-      <div style={{ position: 'absolute', top: 28, left: 0, right: 0, zIndex: 40, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 5%' }}>
-        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#888', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 12px #00e5ff', display: 'inline-block' }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 40, padding: '18px 5%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(5,5,5,0.6)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,229,255,0.12)' }}>
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#00e5ff', display: 'flex', alignItems: 'center', gap: 10, fontWeight: 600, textShadow: '0 0 12px rgba(0,229,255,0.7)' }}>
+          <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 14px #00e5ff, 0 0 28px #00e5ff', display: 'inline-block' }} />
           A. Mani Tripathi
         </div>
-        <nav style={{ display: 'flex', gap: 24, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase' }}>
+        <nav style={{ display: 'flex', gap: 28, alignItems: 'center', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase' }}>
           {[['#experience', 'Experience'], ['#work', 'Work'], ['#contact', 'Contact']].map(([href, label]) => (
-            <a key={label} href={href} style={{ color: '#888', textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseEnter={e => e.target.style.color = '#00e5ff'} onMouseLeave={e => e.target.style.color = '#888'}>{label}</a>
+            <a key={label} href={href} style={{ color: '#aaa', textDecoration: 'none', transition: 'color 0.2s, text-shadow 0.2s', fontWeight: 500 }}
+              onMouseEnter={e => { e.target.style.color = '#00e5ff'; e.target.style.textShadow = '0 0 10px rgba(0,229,255,0.7)'; }}
+              onMouseLeave={e => { e.target.style.color = '#aaa'; e.target.style.textShadow = 'none'; }}>{label}</a>
           ))}
+          <a href="/resume.pdf" target="_blank" rel="noopener" style={{ padding: '7px 18px', borderRadius: 6, border: '1.5px solid #00e5ff', color: '#00e5ff', fontWeight: 600, fontSize: 11, letterSpacing: '0.2em', textDecoration: 'none', background: 'rgba(0,229,255,0.06)', boxShadow: '0 0 12px rgba(0,229,255,0.2)', transition: 'all 0.25s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#00e5ff'; e.currentTarget.style.color = '#050505'; e.currentTarget.style.boxShadow = '0 0 24px rgba(0,229,255,0.5)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.06)'; e.currentTarget.style.color = '#00e5ff'; e.currentTarget.style.boxShadow = '0 0 12px rgba(0,229,255,0.2)'; }}>
+            Resume
+          </a>
         </nav>
       </div>
       {/* Left text */}
@@ -235,9 +241,24 @@ export default function Portfolio() {
       <ExperienceSection />
       <ProjectsSection />
       <ContactSection />
-      <footer style={{ padding: '3rem 1rem', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.05)', background: '#050505' }}>
-        <p style={{ color: '#555', fontSize: '0.875rem', marginBottom: '0.5rem' }}>© {new Date().getFullYear()} Abhishek Mani Tripathi. All rights reserved.</p>
-        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#333' }}>Designed with care</p>
+      <footer style={{ padding: '3rem 1rem', textAlign: 'center', borderTop: '1px solid rgba(0,229,255,0.12)', background: '#050505' }}>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <a
+            href="/resume.pdf"
+            download="Abhishek_Mani_Tripathi_Resume.pdf"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '12px 28px', borderRadius: 8, border: '1.5px solid #00e5ff', color: '#00e5ff', fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase', textDecoration: 'none', background: 'rgba(0,229,255,0.06)', boxShadow: '0 0 18px rgba(0,229,255,0.2)', transition: 'all 0.25s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#00e5ff'; e.currentTarget.style.color = '#050505'; e.currentTarget.style.boxShadow = '0 0 30px rgba(0,229,255,0.5)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,229,255,0.06)'; e.currentTarget.style.color = '#00e5ff'; e.currentTarget.style.boxShadow = '0 0 18px rgba(0,229,255,0.2)'; }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Resume
+          </a>
+        </div>
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#00e5ff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: '0.75rem', textShadow: '0 0 10px rgba(0,229,255,0.5)' }}>
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 10px #00e5ff', display: 'inline-block' }} />
+          A. Mani Tripathi
+        </div>
+        <p style={{ color: '#555', fontSize: '0.8rem', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.15em', marginBottom: '0.4rem' }}>© {new Date().getFullYear()} All rights reserved.</p>
+        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#333' }}>Designed with care</p>
       </footer>
     </div>
   );
