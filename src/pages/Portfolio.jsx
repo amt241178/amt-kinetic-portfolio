@@ -29,7 +29,7 @@ function PhotoRing() {
   return (
     <div style={{
       position: 'absolute', top: '50%', left: '50%',
-      transform: 'translate(-50%, -50%)',
+      transform: 'translate(-50%, -62%)',
       zIndex: 10, pointerEvents: 'none',
       width: 320, height: 320,
     }}>
@@ -94,7 +94,7 @@ function HeroSection() {
         </h1>
       </div>
       {/* Right text */}
-      <div className="amt-hero-right" style={{ position: 'absolute', right: '6%', top: '50%', transform: 'translateY(-50%)', zIndex: 40, textAlign: 'right', pointerEvents: 'none' }}>
+      <div className="amt-hero-right" style={{ position: 'absolute', right: '6%', top: '68%', transform: 'translateY(-50%)', zIndex: 40, textAlign: 'right', pointerEvents: 'none' }}>
         <p style={{ fontSize: '0.95rem', color: '#d1d1d1', marginBottom: 8 }}>I am an</p>
         <RoleCycler />
       </div>
