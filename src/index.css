@@ -326,6 +326,10 @@
   border-color: rgba(255,255,255,0.20);
   box-shadow: 0 25px 50px -12px rgba(168,85,247,0.10);
 }
+.amt-project-card:hover .amt-img-slot-img {
+  transform: scale(1.1);
+  opacity: 1;
+}
 .amt-project-card:hover .amt-img-slot {
   transform: scale(1.1);
   opacity: 1;

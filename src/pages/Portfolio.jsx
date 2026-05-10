@@ -344,8 +344,8 @@ function ExperienceSection() {
 // ─── PROJECTS ─────────────────────────────────────────────────────────────────
 
 const projects = [
-  { label: 'Smart AI Voice Agent', pills: [['AI Voice', true], ['No-Code', false]], title: 'Smart AI Voice Agent', desc: 'A voice-based reminder system that calls registered attendees, confirms their attendance, answers questions and blocks their calendars automatically. Replaced the manual telecalling work entirely.' },
-  { label: 'AI FaceSync', pills: [['Face Recognition', true], ['Smart Gallery', false]], title: 'AI FaceSync', desc: 'A smart event gallery for large corporate photo shoots. Attendees upload a selfie and the system surfaces only their photos with a confidence score. Admins handle uploads and access through a simple dashboard.' },
+  { label: 'Smart AI Voice Agent', img: 'https://media.base44.com/images/public/6a0095ba0fd898883f2ce8d9/3d0e42e4a_ChatGPTImageMay10202608_59_12PM.png', pills: [['AI Voice', true], ['No-Code', false]], title: 'Smart AI Voice Agent', desc: 'A voice-based reminder system that calls registered attendees, confirms their attendance, answers questions and blocks their calendars automatically. Replaced the manual telecalling work entirely.' },
+  { label: 'AI FaceSync', img: 'https://media.base44.com/images/public/6a0095ba0fd898883f2ce8d9/948756ce3_ChatGPTImageMay10202608_24_21PM.png', pills: [['Face Recognition', true], ['Smart Gallery', false]], title: 'AI FaceSync', desc: 'A smart event gallery for large corporate photo shoots. Attendees upload a selfie and the system surfaces only their photos with a confidence score. Admins handle uploads and access through a simple dashboard.' },
   { label: 'Face Puzzle Arena', pills: [['WebAR', true], ['Multiplayer', false]], title: 'Face Puzzle Arena', desc: 'A browser-based AR gaming platform built for live event engagement with no app downloads required. Five games including Car Nose Racer, AR Fruit Ninja and Finger Maze Race, all running on face and hand tracking.' },
   { label: 'Smart Networking System', pills: [['Networking', true], ['QR Booking', false]], title: 'Smart Networking System', desc: 'A networking platform for corporate events and hosted buyer programs. It handles meeting requests, slot scheduling, table allocation and live coordination through a QR self-service interface.' },
   { label: 'Facility Command Center', pills: [['Operations', true], ['Geo Verified', false]], title: 'Facility Command Center', desc: 'An office facility platform where employees scan a QR code to report issues with photos. Admins assign and track tasks. Geolocation confirms that work was done on site.' },
@@ -382,7 +382,9 @@ function ProjectsSection() {
           {projects.map((p, i) => (
             <article key={p.label} ref={el => cardRefs.current[i] = el} className="amt-project-card">
               <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }}>
-                <div className="amt-img-slot" data-label={`16:9 — ${p.label}`} />
+                {p.img
+                  ? <img src={p.img} alt={p.label} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7, transition: 'transform 0.7s ease, opacity 0.7s ease' }} className="amt-img-slot-img" />
+                  : <div className="amt-img-slot" data-label={`16:9 — ${p.label}`} />}
               </div>
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #080808 0%, rgba(8,8,8,0.8) 50%, transparent 100%)', zIndex: 1 }} />
               <div className="amt-project-content">
