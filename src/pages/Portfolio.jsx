@@ -5,7 +5,7 @@ import HeroBackground from '../components/portfolio/HeroBackground';
 
 // ─── HERO ────────────────────────────────────────────────────────────────────
 
-const ROLES = ['Event Tech Lead', 'AI Builder', 'Production Strategist', 'Live Streaming Expert'];
+const ROLES = ['Event Tech Lead', 'AI Builder', 'Event Operations', 'Technical Support', 'Product & Project Management', 'Live Streaming Expert'];
 const PHOTO_URL = 'https://media.base44.com/images/public/6a0095ba0fd898883f2ce8d9/6ff7494a8_unnamed1.jpg';
 
 function RoleCycler() {
