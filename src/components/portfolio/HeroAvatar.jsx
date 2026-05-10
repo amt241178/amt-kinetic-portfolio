@@ -164,8 +164,12 @@ export default function HeroAvatar() {
     const rim = new THREE.PointLight(0x7c3aff, 12, 10);
     rim.position.set(0, 2, -3);
     scene.add(rim);
-    scene.add(Object.assign(new THREE.PointLight(0xc4b5fd, 0.6, 12), { position: new THREE.Vector3(4, 0.5, 1) }));
-    scene.add(Object.assign(new THREE.PointLight(0x6d28d9, 1.2, 6), { position: new THREE.Vector3(-2.5, -1, 2) }));
+    const fill = new THREE.PointLight(0xc4b5fd, 0.6, 12);
+    fill.position.set(4, 0.5, 1);
+    scene.add(fill);
+    const kicker = new THREE.PointLight(0x6d28d9, 1.2, 6);
+    kicker.position.set(-2.5, -1, 2);
+    scene.add(kicker);
 
     // Halo
     const haloMat = new THREE.MeshBasicMaterial({ color: 0x5b21b6, transparent: true, opacity: 0.18, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
