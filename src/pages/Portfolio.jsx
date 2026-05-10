@@ -23,7 +23,7 @@ function LoadingScreen({ progress, visible }) {
     return () => clearInterval(t);
   }, []);
   return (
-    <div style={{ position: 'absolute', inset: 0, zIndex: 20, background: '#050505', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 32, opacity: visible ? 1 : 0, pointerEvents: visible ? 'auto' : 'none', transition: 'opacity 0.7s ease' }}>
+    <div style={{ position: 'absolute', inset: 0, zIndex: 3, background: '#050505', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 32, opacity: visible ? 1 : 0, pointerEvents: visible ? 'auto' : 'none', transition: 'opacity 0.7s ease' }}>
       <div style={{ position: 'relative', width: 80, height: 80 }}>
         <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'radial-gradient(circle, #00e5ff 0%, #006080 60%, transparent 100%)', filter: 'blur(8px)', animation: 'amt-pulse-orb 1.4s ease-in-out infinite' }} />
         <div style={{ position: 'absolute', inset: 16, borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 30px #00e5ff', animation: 'amt-pulse-orb 1.4s ease-in-out infinite' }} />
@@ -50,7 +50,7 @@ function RoleCycler() {
     return () => clearInterval(t);
   }, []);
   return (
-    <div style={{ position: 'relative', height: 'clamp(2.5rem, 6vw, 5rem)', overflow: 'hidden', width: '100%' }}>
+    <div style={{ position: 'relative', height: 'clamp(2.5rem, 6vw, 6rem)', overflow: 'visible', width: '100%' }}>
       <div style={{ position: 'absolute', right: 0, top: 0, fontSize: 'clamp(2rem, 4.5vw, 3.8rem)', fontWeight: 900, letterSpacing: '-0.03em', whiteSpace: 'nowrap', lineHeight: 1.05, background: 'linear-gradient(135deg, #ffffff, #00e5ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', opacity: phase === 'in' ? 1 : 0, transform: phase === 'in' ? 'translateY(0)' : 'translateY(-40px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>{ROLES[idx]}</div>
     </div>
   );
@@ -112,6 +112,7 @@ function HeroSection() {
     scene.add(avatarGroup);
 
     const loader = new GLTFLoader();
+    loader.setCrossOrigin('anonymous');
     function tryLoad(url, fallback) {
       loader.load(url, (gltf) => {
         const mesh = gltf.scene;
@@ -166,11 +167,11 @@ function HeroSection() {
   return (
     <section id="home" style={{ position: 'relative', width: '100vw', height: '100vh', minHeight: 700, background: '#050505', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 55% 55% at 50% 70%, rgba(0,229,255,0.12) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 1 }} />
-      <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
+      <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
         <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
       </div>
       <LoadingScreen progress={loadProgress} visible={!avatarLoaded} />
-      <div style={{ position: 'absolute', top: 28, left: 0, right: 0, zIndex: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 5%' }}>
+      <div style={{ position: 'absolute', top: 28, left: 0, right: 0, zIndex: 40, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 5%' }}>
         <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#888', display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 12px #00e5ff', display: 'inline-block' }} />
           A. Mani Tripathi
@@ -182,7 +183,7 @@ function HeroSection() {
           ))}
         </nav>
       </div>
-      <div className="amt-hero-left" style={{ position: 'absolute', left: '6%', top: '50%', transform: 'translateY(-50%)', zIndex: 10, pointerEvents: 'none' }}>
+      <div className="amt-hero-left" style={{ position: 'absolute', left: '6%', top: '50%', transform: 'translateY(-50%)', zIndex: 40, pointerEvents: 'none' }}>
         <p style={{ fontSize: '0.95rem', color: '#00e5ff', marginBottom: 8, fontWeight: 400 }}>Hello, I'm</p>
         <h1 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 0.95, color: '#fff', margin: 0, fontSize: 'clamp(2.2rem, 5vw, 4.2rem)' }}>
           <span style={{ display: 'block' }}>Abhishek</span>
@@ -190,11 +191,11 @@ function HeroSection() {
           <span style={{ display: 'block', color: '#00e5ff', textShadow: '0 0 20px rgba(0,229,255,0.5)' }}>Tripathi.</span>
         </h1>
       </div>
-      <div className="amt-hero-right" style={{ position: 'absolute', right: '6%', top: '50%', transform: 'translateY(-50%)', zIndex: 10, textAlign: 'right', pointerEvents: 'none' }}>
+      <div className="amt-hero-right" style={{ position: 'absolute', right: '6%', top: '50%', transform: 'translateY(-50%)', zIndex: 40, textAlign: 'right', pointerEvents: 'none' }}>
         <p style={{ fontSize: '0.95rem', color: '#d1d1d1', marginBottom: 8 }}>I am an</p>
         <RoleCycler />
       </div>
-      <div className="amt-scroll-cue-purple" style={{ position: 'absolute', bottom: 32, left: '50%', transform: 'translateX(-50%)', zIndex: 10, color: '#00e5ff' }}>Scroll</div>
+      <div className="amt-scroll-cue-purple" style={{ position: 'absolute', bottom: 32, left: '50%', transform: 'translateX(-50%)', zIndex: 40, color: '#00e5ff' }}>Scroll</div>
     </section>
   );
 }
