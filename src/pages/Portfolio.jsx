@@ -9,8 +9,8 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 const SKILLS = ['Event Tech Lead', 'AI Builder', 'Production Strategist', 'Web App Creator', 'Live Streaming Expert', 'No-Code Developer', 'Cvent Certified', 'APAC Specialist'];
 const ROLES  = ['Event Tech Lead', 'AI Builder', 'Production Strategist', 'Live Streaming Expert'];
 
-const AVATAR_URL   = 'https://drive.usercontent.google.com/download?id=19JNLJEdbvuogzR_jO_Ohfwax_ERZJsZS&export=download&confirm=t';
-const AVATAR_URL_2 = 'https://drive.usercontent.google.com/download?id=1i7ZQ48C1mAIoOzwmgwKTrA53Ih43lyrE&export=download&confirm=t';
+const AVATAR_URL   = 'https://raw.githubusercontent.com/amt241178/amt-kinetic-portfolio/1c63ac2bbf70b871272316506b117d1a5ec7bc82/model1.glb';
+const AVATAR_URL_2 = 'https://raw.githubusercontent.com/amt241178/amt-kinetic-portfolio/1c63ac2bbf70b871272316506b117d1a5ec7bc82/model2.glb';
 
 function LoadingScreen({ progress, visible }) {
   const [idx, setIdx] = useState(0);
