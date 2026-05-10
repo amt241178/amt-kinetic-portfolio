@@ -402,73 +402,38 @@ function ContactSection() {
   );
 }
 
-// ─── AVATURN MODAL ────────────────────────────────────────────────────────────
-
-function AvaturnModal({ onClose, onExport }) {
-  useEffect(() => {
-    function handleMessage(event) {
-      if (event.data?.source === 'avaturn' && event.data?.eventName === 'v2.avatar.exported') {
-        const url = event.data?.data?.url;
-        if (url) { onExport(url); onClose(); }
-      }
-    }
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [onExport, onClose]);
-
-  return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ position: 'relative', width: '90vw', maxWidth: 900, height: '80vh', borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(0,229,255,0.3)', boxShadow: '0 0 60px rgba(0,229,255,0.2)' }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '50%', width: 36, height: 36, cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
-        <div id="avaturn-sdk-container" style={{ width: '100%', height: '100%' }}>
-          <iframe
-            src="https://avaturn.me/embed"
-            title="Avaturn Avatar Creator"
-            allow="camera; microphone"
-            style={{ width: '100%', height: '100%', border: 'none' }}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
 export default function Portfolio() {
   const [currentModelUrl, setCurrentModelUrl] = useState(MODELS[0]);
-  const [showAvaturn, setShowAvaturn] = useState(false);
   const lastIndexRef = useRef(0);
+  const cooldownRef = useRef(false);
+
+  const switchModel = () => {
+    if (cooldownRef.current) return;
+    cooldownRef.current = true;
+    let newIndex;
+    do { newIndex = Math.floor(Math.random() * MODELS.length); } while (newIndex === lastIndexRef.current && MODELS.length > 1);
+    lastIndexRef.current = newIndex;
+    setCurrentModelUrl(MODELS[newIndex]);
+    setTimeout(() => { cooldownRef.current = false; }, 1500);
+  };
 
   useEffect(() => {
-    let ticking = false;
-    const cards = document.querySelectorAll('.amt-project-card');
-    if (!cards.length) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (ticking) return;
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          ticking = true;
-          let newIndex;
-          do { newIndex = Math.floor(Math.random() * MODELS.length); } while (newIndex === lastIndexRef.current && MODELS.length > 1);
-          lastIndexRef.current = newIndex;
-          setCurrentModelUrl(MODELS[newIndex]);
-          setTimeout(() => { ticking = false; }, 1500);
-        }
-      });
-    }, { threshold: 0.5 });
-    cards.forEach(card => observer.observe(card));
-    return () => observer.disconnect();
+    // Switch on scroll
+    const onScroll = () => switchModel();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    // Switch on click anywhere
+    const onClick = () => switchModel();
+    window.addEventListener('click', onClick);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('click', onClick);
+    };
   }, []);
 
   return (
     <div style={{ background: '#050505', color: '#ededed', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", fontWeight: 400, lineHeight: 1.6, overflowX: 'hidden', WebkitFontSmoothing: 'antialiased' }}>
-      {showAvaturn && (
-        <AvaturnModal
-          onClose={() => setShowAvaturn(false)}
-          onExport={(url) => setCurrentModelUrl(url)}
-        />
-      )}
       <HeroSection modelUrl={currentModelUrl} />
       <ExperienceSection />
       <ProjectsSection />
@@ -477,15 +442,6 @@ export default function Portfolio() {
         <p style={{ color: '#555', fontSize: '0.875rem', marginBottom: '0.5rem' }}>© {new Date().getFullYear()} Abhishek Mani Tripathi. All rights reserved.</p>
         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#333' }}>Built with Three.js · Designed with care</p>
       </footer>
-      {/* Avaturn FAB */}
-      <button
-        onClick={() => setShowAvaturn(true)}
-        style={{ position: 'fixed', bottom: 28, right: 28, zIndex: 100, display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 999, background: 'rgba(5,5,5,0.9)', border: '1.5px solid #00e5ff', color: '#00e5ff', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', cursor: 'pointer', backdropFilter: 'blur(12px)', boxShadow: '0 0 20px rgba(0,229,255,0.2)', transition: 'all 0.25s ease' }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#00e5ff'; e.currentTarget.style.color = '#050505'; e.currentTarget.style.boxShadow = '0 0 30px rgba(0,229,255,0.5)'; }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(5,5,5,0.9)'; e.currentTarget.style.color = '#00e5ff'; e.currentTarget.style.boxShadow = '0 0 20px rgba(0,229,255,0.2)'; }}
-      >
-        ✦ Customize Avatar
-      </button>
     </div>
   );
 }
